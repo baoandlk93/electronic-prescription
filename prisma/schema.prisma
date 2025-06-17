@@ -17,14 +17,6 @@ model Patient {
   prescriptions Prescription[]
 }
 
-model Diagnosis {
-  id            Int           @id @default(autoincrement())
-  code          String
-  description   String
-  prescriptions Prescription[]   
-}
-
-
 model Medicine {
   id           Int                   @id @default(autoincrement())
   name         String
@@ -35,16 +27,35 @@ model Medicine {
 
 
 model Prescription {
-  id           Int      @id @default(autoincrement())
-  code         String
-  patient      Patient  @relation(fields: [patientId], references: [id])
-  patientId    Int
-  diagnosis    Diagnosis @relation(fields: [diagnosisId], references: [id])
-  diagnosisId  Int
-  createdAt    DateTime @default(now())
-  advice       String?
-  items        PrescriptionMedicine[]
+  id         Int                  @id @default(autoincrement())
+  code       String
+  patient    Patient              @relation(fields: [patientId], references: [id])
+  patientId  Int
+  diagnoses  PrescriptionDiagnosis[]
+  createdAt  DateTime             @default(now())
+  advice     String?
+  items      PrescriptionMedicine[]
 }
+
+model Diagnosis {
+  id                      Int                      @id @default(autoincrement())
+  name                    String
+  code                    String
+  description             String
+  prescriptions           PrescriptionDiagnosis[]
+}
+
+model PrescriptionDiagnosis {
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id])
+  prescriptionId Int
+  diagnosis      Diagnosis    @relation(fields: [diagnosisId], references: [id])
+  diagnosisId    Int
+  note           String?      // Thêm ghi chú riêng cho mỗi chẩn đoán (nếu muốn)
+
+  @@id([prescriptionId, diagnosisId])
+}
+
+
 
 model PrescriptionMedicine {
   id             Int @id @default(autoincrement())

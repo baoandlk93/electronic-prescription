@@ -10,8 +10,10 @@ import {
   Space,
   Modal,
 } from "antd";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PatientSelector from "./PatientSelector";
+import { Diagnosis } from "../types/Diagnosis";
+import { Medicine } from "@prisma/client";
 
 const DIAGNOSES = [
   { id: 1, code: "A01", description: "Sốt xuất huyết" },
@@ -30,15 +32,38 @@ export default function PrescriptionForm({
   onSuccess?: () => void;
   onCancel?: () => void;
 }) {
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  useEffect(() => {
+    fetchDiagnoses();
+    fetchMedicines();
+  }, []);
+  const fetchDiagnoses = async () => {
+    const response = await fetch("/api/diagnoses");
+    const data = await response.json();
+    setDiagnoses(data);
+  };
+  const fetchMedicines = async () => {
+    const response = await fetch("/api/medicines");
+    const data = await response.json();
+    setMedicines(data);
+  };
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [patientId, setPatientId] = useState<string | undefined>(undefined);
-  const [diagnosisId, setDiagnosisId] = useState<string | undefined>(undefined);
   const [medicineId, setMedicineId] = useState<string | undefined>(undefined);
+  const [diagnosisIds, setDiagnosisIds] = useState<string[]>([]);
 
   const onFinish = (values: any) => {
+    const data = {
+      patientId: values.patientId,
+      diagnosisIds: values.diagnosisIds,
+      medicines: values.medicines,
+      advice: values.advice,
+      followUpDate: values.followUpDate,
+    };
     setLoading(true);
-    console.log(values);
+    console.log(data);
     setLoading(false);
     form.resetFields();
     if (onSuccess) onSuccess();
@@ -68,18 +93,24 @@ export default function PrescriptionForm({
       {/* 2. Chẩn đoán */}
       <Form.Item
         label="Chẩn đoán"
-        name="diagnosisId"
-        rules={[{ required: true, message: "Vui lòng chọn chẩn đoán." }]}
+        name="diagnosisIds"
+        rules={[
+          { required: true, message: "Vui lòng chọn ít nhất 1 chẩn đoán." },
+        ]}
       >
         <Select
+          mode="multiple" // Nếu bạn muốn chọn nhiều, giữ lại dòng này, nếu không thì bỏ đi
           showSearch
           placeholder="Nhập mã, tên bệnh"
-          options={DIAGNOSES.map((d) => ({
+          filterOption={(input, option) =>
+            (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
+          }
+          options={diagnoses.map((d) => ({
             value: d.id,
-            label: `${d.code} - ${d.description}`,
+            label: `${d.code} - ${d.description}`, // label chứa cả mã và mô tả
           }))}
-          value={diagnosisId}
-          onChange={(value) => setDiagnosisId(value)}
+          style={{ width: "100%" }}
+          onChange={(value) => setDiagnosisIds(value)}
         />
       </Form.Item>
 
@@ -100,7 +131,7 @@ export default function PrescriptionForm({
                 >
                   <Select
                     placeholder="Thuốc"
-                    options={MEDICINES.map((m) => ({
+                    options={medicines.map((m) => ({
                       value: m.id,
                       label: m.name,
                     }))}

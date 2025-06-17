@@ -4,19 +4,22 @@ import {
   AiOutlineUser,
   AiOutlineFileText,
   AiOutlineBarChart,
+  AiOutlineHome,
 } from "react-icons/ai";
-
+import { CiVirus } from "react-icons/ci";
 export default function Sidebar() {
   return (
-    <nav className="min-h-screen w-64 bg-gradient-to-br from-blue-700 via-blue-400 to-white text-white px-6 py-8 shadow-lg flex flex-col">
+    <nav className="max-h-screen w-64 bg-gradient-to-br from-blue-700 via-blue-400 to-white text-white px-6 py-8 shadow-lg flex flex-col">
       <div className="font-bold text-lg tracking-wider mb-10 text-white drop-shadow-sm">
         DANH MỤC
       </div>
+      <SidebarLink href="/" Icon={AiOutlineHome} label="Trang chủ" />
       <SidebarLink
         href="/prescription"
         Icon={AiOutlineFileText}
         label="Quản lý đơn thuốc"
       />
+      <SidebarLink href="/diagnosis" Icon={CiVirus} label="Quản lý bệnh" />
       <SidebarLink
         href="/medicine"
         Icon={AiFillMedicineBox}

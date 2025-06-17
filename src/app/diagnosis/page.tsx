@@ -6,66 +6,70 @@ import { useEffect, useState } from "react";
 import AddMedicineForm from "@/components/AddMedicineForm";
 import { GiMedicines } from "react-icons/gi";
 import { Medicine } from "@/types/Medicine";
+import DeleteMedicineModal from "@/components/DeleteMedicineModal";
+import AddIllnessForm from "@/components/AddDiagnosisForm";
+import AddDiagnosisForm from "@/components/AddDiagnosisForm";
 import DeleteModal from "@/components/DeleteModal";
 import { toast } from "react-toastify";
-export default function MedicinePage() {
-  const [openMedicineModal, setOpenMedicineModal] = useState(false);
-  const [medicines, setMedicines] = useState<Medicine[]>([]);
-  const [editingMedicine, setEditingMedicine] = useState<Medicine | null>(null);
+export default function DiagnosisPage() {
+  const [openDiagnosisModal, setOpenDiagnosisModal] = useState(false);
+  const [diagnoses, setDiagnoses] = useState<Medicine[]>([]);
+  const [editingDiagnosis, setEditingDiagnosis] = useState<Medicine | null>(
+    null
+  );
   const [modalOpen, setModalOpen] = useState(false);
-  const [medicineIdToDelete, setMedicineIdToDelete] = useState<string | "">("");
+  const [diagnosisIdToDelete, setDiagnosisIdToDelete] = useState<string | "">(
+    ""
+  );
 
   function openDeleteModal(id: string) {
-    setMedicineIdToDelete(id);
+    setDiagnosisIdToDelete(id);
     setModalOpen(true);
   }
 
   const fetchMedicines = async () => {
-    const response = await fetch("/api/medicines");
+    const response = await fetch("/api/diagnoses");
     const data = await response.json();
-    setMedicines(data);
+    setDiagnoses(data);
   };
-
+  useEffect(() => {
+    fetchMedicines();
+  }, []);
   const handleDelete = async () => {
-    if (!medicineIdToDelete) return;
-    await fetch(`/api/medicines`, {
+    if (!diagnosisIdToDelete) return;
+    await fetch(`/api/diagnoses`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: medicineIdToDelete }),
+      body: JSON.stringify({ id: diagnosisIdToDelete }),
     })
       .then(() => {
         fetchMedicines();
         setModalOpen(false);
-        toast.success("Xóa thuốc thành công!");
+        toast.success("Xóa bệnh thành công!");
       })
       .catch((err) => {
         console.error(err);
-        toast.error("Xóa thuốc thất bại!");
+        toast.error("Xóa bệnh thất bại!");
       });
   };
-
-  useEffect(() => {
-    fetchMedicines();
-  }, []);
-
   return (
-    <div className="flex flex-col min-h-screen overflow-auto bg-gray-50 text-gray-900 p-16">
-      <h1 className="text-2xl font-bold mb-4 text-center">Quản lý thuốc</h1>
+    <div className="flex flex-col max-h-screen overflow-hidden bg-gray-50 text-gray-900 p-16">
+      <h1 className="text-2xl font-bold mb-4 text-center">Quản lý bệnh</h1>
       <div className="flex justify-start mb-4">
         <Button
           type="primary"
           onClick={() => {
-            setOpenMedicineModal(true);
-            setEditingMedicine(null);
+            setOpenDiagnosisModal(true);
+            setEditingDiagnosis(null);
           }}
         >
-          <GiMedicines /> Thêm thuốc
+          <GiMedicines /> Thêm bệnh
         </Button>
       </div>
       <DataTable
         columns={[
           {
-            title: "Mã",
+            title: "STT",
             dataIndex: "id",
             key: "id",
           },
@@ -75,14 +79,14 @@ export default function MedicinePage() {
             key: "name",
           },
           {
-            title: "Hàm lượng",
-            dataIndex: "content",
-            key: "content",
+            title: "Mã",
+            dataIndex: "code",
+            key: "code",
           },
           {
-            title: "Đơn vị",
-            dataIndex: "unit",
-            key: "unit",
+            title: "Mô tả",
+            dataIndex: "description",
+            key: "description",
           },
           {
             title: "Hành động",
@@ -93,8 +97,8 @@ export default function MedicinePage() {
                   className="mr-2"
                   type="primary"
                   onClick={() => {
-                    setEditingMedicine(record);
-                    setOpenMedicineModal(true);
+                    setEditingDiagnosis(record);
+                    setOpenDiagnosisModal(true);
                   }}
                 >
                   <GiMedicines /> Sửa
@@ -113,21 +117,21 @@ export default function MedicinePage() {
             ),
           },
         ]}
-        dataSource={medicines}
+        dataSource={diagnoses}
       />
       <Modal
-        title="Thêm thuốc mới"
-        open={openMedicineModal}
-        onCancel={() => setOpenMedicineModal(false)}
+        title="Thêm bệnh mới"
+        open={openDiagnosisModal}
+        onCancel={() => setOpenDiagnosisModal(false)}
         footer={null}
         destroyOnHidden
       >
-        <AddMedicineForm
+        <AddDiagnosisForm
           onSuccess={() => {
-            setOpenMedicineModal(false);
+            setOpenDiagnosisModal(false);
             fetchMedicines();
           }}
-          editingMedicine={editingMedicine}
+          editingDiagnosis={editingDiagnosis}
         />
       </Modal>
       <DeleteModal

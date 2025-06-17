@@ -32,9 +32,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ToastContainer />
-        <div className="flex min-h-screen overflow-auto bg-gray-50 text-gray-900">
+        <div className="flex h-screen overflow-hidden bg-gray-50 text-gray-900">
           <Sidebar />
-          <div className="flex-1 p-16">{children}</div>
+          <div className="flex-1">{children}</div>
         </div>
       </body>
     </html>
