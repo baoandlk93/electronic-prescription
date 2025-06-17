@@ -1,0 +1,111 @@
+"use client";
+
+import { Button, Modal } from "antd";
+import DataTable from "@/components/DataTable";
+import { useEffect, useState } from "react";
+import AddMedicineForm from "@/components/AddMedicineForm";
+import { GiMedicines } from "react-icons/gi";
+import { Medicine } from "@/types/Medicine";
+export default function MedicinePage() {
+  const [openMedicineModal, setOpenMedicineModal] = useState(false);
+  const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [editingMedicine, setEditingMedicine] = useState<Medicine | null>(null);
+
+  const handleDeleteMedicine = (medicine: Medicine) => {
+    setMedicines(medicines.filter((m) => m.id !== medicine.id));
+  };
+
+  const fetchMedicines = async () => {
+    const response = await fetch("/api/medicines");
+    const data = await response.json();
+    setMedicines(data);
+  };
+  useEffect(() => {
+    fetchMedicines();
+  }, []);
+
+  return (
+    <div className="flex flex-col min-h-screen overflow-auto bg-gray-50 text-gray-900 p-16">
+      <h1 className="text-2xl font-bold mb-4 text-center">Quản lý thuốc</h1>
+      <div className="flex justify-start mb-4">
+        <Button
+          type="primary"
+          onClick={() => {
+            setOpenMedicineModal(true);
+            setEditingMedicine(null);
+          }}
+        >
+          <GiMedicines /> Thêm thuốc
+        </Button>
+      </div>
+      <DataTable
+        columns={[
+          {
+            title: "Mã",
+            dataIndex: "id",
+            key: "id",
+          },
+          {
+            title: "Tên",
+            dataIndex: "name",
+            key: "name",
+          },
+          {
+            title: "Hàm lượng",
+            dataIndex: "content",
+            key: "content",
+          },
+          {
+            title: "Đơn vị",
+            dataIndex: "unit",
+            key: "unit",
+          },
+          {
+            title: "Hành động",
+            key: "action",
+            render: (record: Medicine) => (
+              <>
+                <Button
+                  className="mr-2"
+                  type="primary"
+                  onClick={() => {
+                    setEditingMedicine(record);
+                    setOpenMedicineModal(true);
+                  }}
+                >
+                  <GiMedicines /> Sửa
+                </Button>
+                <Button
+                  className="ml-2"
+                  type="primary"
+                  danger
+                  onClick={() => {
+                    handleDeleteMedicine(record);
+                  }}
+                >
+                  <GiMedicines /> Xóa
+                </Button>
+              </>
+            ),
+          },
+        ]}
+        dataSource={medicines}
+      />
+      <Modal
+        title="Thêm thuốc mới"
+        open={openMedicineModal}
+        onCancel={() => setOpenMedicineModal(false)}
+        footer={null}
+        destroyOnHidden
+      >
+        <AddMedicineForm
+          onSuccess={() => {
+            setOpenMedicineModal(false);
+            fetchMedicines();
+          }}
+          editingMedicine={editingMedicine}
+        />
+      </Modal>
+    </div>
+  );
+}
