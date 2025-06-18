@@ -15,6 +15,7 @@ model Patient {
   address      String
   phone        String?
   prescriptions Prescription[]
+  createdAt    DateTime             @default(now())
 }
 
 model Medicine {
@@ -35,6 +36,8 @@ model Prescription {
   createdAt  DateTime             @default(now())
   advice     String?
   items      PrescriptionMedicine[]
+  followUpDate DateTime?
+  
 }
 
 model Diagnosis {

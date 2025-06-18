@@ -1,15 +1,74 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Modal } from "antd";
 import PrescriptionForm from "@/components/PrescriptionForm";
 import DataTable from "@/components/DataTable";
 import { Prescription } from "@/types/Prescription";
+import { Patient } from "@/types/Patient";
 import { GiMedicines } from "react-icons/gi";
+import DeleteModal from "@/components/DeleteModal";
+import dayjs from "dayjs";
+import { toast } from "react-toastify";
 export default function PrescriptionPage() {
   const [openPrescriptionModal, setOpenPrescriptionModal] = useState(false);
   const [editingPrescription, setEditingPrescription] =
     useState<Prescription | null>(null);
   const [prescriptions, setPrescriptions] = useState<Prescription[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  useEffect(() => {
+    fetchPrescriptions();
+  }, []);
+  useEffect(() => {
+    if (!loading) {
+      fetchPatient();
+    }
+  }, [loading]);
+  const fetchPrescriptions = async () => {
+    setLoading(true);
+    const response = await fetch("/api/prescriptions");
+    const data = await response.json();
+    console.log(data);
+    setPrescriptions(data);
+    setLoading(false);
+  };
+  const fetchPatient = async () => {
+    const response = await fetch("/api/patients");
+    const data = await response.json();
+    setPrescriptions((prev) => {
+      return prev.map((item) => {
+        return {
+          ...item,
+          patient: data.find(
+            (patient: Patient) => patient.id === item.patientId
+          ),
+        };
+      });
+    });
+  };
+
+  const handleEdit = async (record: Prescription) => {
+    const res = await fetch(`/api/prescriptions/${record.id}`);
+    const data = await res.json();
+    setEditingPrescription(data);
+    setOpenPrescriptionModal(true);
+  };
+
+  const handleDelete = (id: string) => {
+    setDeletingId(id);
+    setOpenDeleteModal(true);
+  };
+  const handleDeleteConfirm = async () => {
+    if (!deletingId) return;
+    await fetch(`/api/prescriptions/${deletingId}`, {
+      method: "DELETE",
+    });
+    toast.success("Xóa đơn thuốc thành công");
+    fetchPrescriptions();
+    setOpenDeleteModal(false);
+    setDeletingId(null);
+  };
 
   return (
     <div className="p-16 max-h-screen overflow-hidden mx-auto bg-gray-50 text-gray-900">
@@ -39,14 +98,21 @@ export default function PrescriptionPage() {
             key: "code",
           },
           {
-            title: "Tên",
-            dataIndex: "patient.name",
-            key: "name",
+            title: "Tên bệnh nhân",
+            dataIndex: "patientId",
+            key: "patientId",
+            render: (text: string) => {
+              const patient = prescriptions.find(
+                (item) => item.patientId === text
+              );
+              return patient?.name;
+            },
           },
           {
-            title: "Hành động",
-            dataIndex: "unit",
-            key: "unit",
+            title: "Ngày tạo",
+            dataIndex: "createdAt",
+            key: "createdAt",
+            render: (text: string) => dayjs(text).format("DD/MM/YYYY"),
           },
           {
             title: "Hành động",
@@ -57,8 +123,7 @@ export default function PrescriptionPage() {
                   className="mr-2"
                   type="primary"
                   onClick={() => {
-                    setEditingPrescription(record);
-                    setOpenPrescriptionModal(true);
+                    handleEdit(record);
                   }}
                 >
                   <GiMedicines /> Sửa
@@ -68,7 +133,7 @@ export default function PrescriptionPage() {
                   type="primary"
                   danger
                   onClick={() => {
-                    openDeleteModal(record.id);
+                    handleDelete(record.id);
                   }}
                 >
                   <GiMedicines /> Xóa
@@ -91,8 +156,14 @@ export default function PrescriptionPage() {
             setOpenPrescriptionModal(false);
           }}
           onCancel={() => setOpenPrescriptionModal(false)}
+          editingPrescription={editingPrescription}
         />
       </Modal>
+      <DeleteModal
+        open={openDeleteModal}
+        onClose={() => setOpenDeleteModal(false)}
+        onDelete={() => handleDeleteConfirm()}
+      />
     </div>
   );
 }

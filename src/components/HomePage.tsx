@@ -1,21 +1,57 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button, Card, List, Statistic, Row, Col, Modal } from "antd";
 import AddPatientForm from "@/components/AddPatientForm";
 import AddMedicineForm from "@/components/AddMedicineForm";
 import PrescriptionForm from "@/components/PrescriptionForm";
+import { Prescription } from "@/types/Prescription";
+import dayjs from "dayjs";
 
 export default function HomePage() {
   const [openPatientModal, setOpenPatientModal] = useState(false);
   const [openMedicineModal, setOpenMedicineModal] = useState(false);
   const [openPrescriptionModal, setOpenPrescriptionModal] = useState(false);
-  const [recentPrescriptions, setRecentPrescriptions] = useState([
-    { code: "#1234", name: "Nguyễn Văn B", date: "15/06/2025" },
-    { code: "#1233", name: "Trần Thị C", date: "14/06/2025" },
-  ]);
+  const [recentPrescriptions, setRecentPrescriptions] = useState<
+    Prescription[]
+  >([]);
+  const [countPrescriptionToday, setCountPrescriptionToday] = useState(0);
+  const [countPatientToday, setCountPatientToday] = useState(0);
+  const [countMedicine, setCountMedicine] = useState(0);
+
+  useEffect(() => {
+    fetchRecentPrescriptions();
+    fetchCountPrescriptionToday();
+    fetchCountPatientToday();
+    fetchCountMedicine();
+  }, []);
+
+  const fetchRecentPrescriptions = async () => {
+    const response = await fetch("/api/prescriptions?limit=5");
+    const data = await response.json();
+    setRecentPrescriptions(data);
+  };
+
+  const fetchCountPrescriptionToday = async () => {
+    const response = await fetch("/api/prescriptions/count-today");
+    const data = await response.json();
+    setCountPrescriptionToday(data.count);
+  };
+
+  const fetchCountPatientToday = async () => {
+    const response = await fetch("/api/patients/count-today");
+    const data = await response.json();
+    console.log(data);
+    setCountPatientToday(data.count);
+  };
+
+  const fetchCountMedicine = async () => {
+    const response = await fetch("/api/medicines/count");
+    const data = await response.json();
+    setCountMedicine(data.count);
+  };
 
   return (
-    <div className="p-16 max-h-screen overflow-hidden mx-auto bg-gray-50 text-gray-900">
+    <div className="flex flex-col px-16 max-h-screen overflow-hidden mx-auto bg-gray-50 text-gray-900">
       <h1 className="text-2xl font-bold mb-4 text-center">Phần mềm quản lý</h1>
       <p className="text-center">
         Quản lý bệnh nhân, đơn thuốc và thuốc hiệu quả, tiết kiệm thời gian.
@@ -51,33 +87,37 @@ export default function HomePage() {
       </div>
       <Row gutter={16} style={{ marginBottom: 24 }}>
         <Col span={8}>
-          <Statistic title="Đơn thuốc hôm nay" value={5} />
+          <Statistic title="Đơn thuốc hôm nay" value={countPrescriptionToday} />
         </Col>
         <Col span={8}>
-          <Statistic title="Bệnh nhân mới" value={2} />
+          <Statistic title="Bệnh nhân mới" value={countPatientToday} />
         </Col>
         <Col span={8}>
-          <Statistic title="Số loại thuốc" value={20} />
+          <Statistic title="Số loại thuốc" value={countMedicine} />
         </Col>
       </Row>
-      <Card
-        title="Đơn thuốc gần đây"
-        extra={<a href="/prescription">Tất cả</a>}
-      >
-        <List
-          dataSource={recentPrescriptions}
-          renderItem={(item) => (
-            <List.Item
-              actions={[<a href={`/prescription/${item.code}`}>Xem</a>]}
-            >
-              <List.Item.Meta
-                title={`${item.code} - ${item.name}`}
-                description={`Ngày: ${item.date}`}
-              />
-            </List.Item>
-          )}
-        />
-      </Card>
+      <div className="overflow-auto">
+        <Card
+          title="Đơn thuốc gần đây"
+          extra={<a href="/prescription">Tất cả</a>}
+        >
+          <List
+            dataSource={recentPrescriptions}
+            renderItem={(item) => (
+              <List.Item
+                actions={[<a href={`/prescription/${item.id}`}>Xem</a>]}
+              >
+                <List.Item.Meta
+                  title={`${item.code} - ${item.patientId}`}
+                  description={`Ngày: ${dayjs(item.createdAt).format(
+                    "DD/MM/YYYY HH:mm:ss"
+                  )}`}
+                />
+              </List.Item>
+            )}
+          />
+        </Card>
+      </div>
 
       {/* Modal Thêm Bệnh Nhân */}
       <Modal
@@ -110,16 +150,9 @@ export default function HomePage() {
         destroyOnHidden
       >
         <PrescriptionForm
-          onSuccess={() => {
+          onSuccess={(item) => {
             setOpenPrescriptionModal(false);
-            setRecentPrescriptions([
-              ...recentPrescriptions,
-              {
-                code: "#1235",
-                name: "Nguyễn Văn D",
-                date: "16/06/2025",
-              },
-            ]);
+            setRecentPrescriptions([...recentPrescriptions, item]);
           }}
           onCancel={() => setOpenPrescriptionModal(false)}
         />

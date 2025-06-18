@@ -8,65 +8,113 @@ import {
   InputNumber,
   DatePicker,
   Space,
-  Modal,
+  message,
 } from "antd";
 import { useState, useEffect } from "react";
 import PatientSelector from "./PatientSelector";
 import { Diagnosis } from "../types/Diagnosis";
-import { Medicine } from "@prisma/client";
+import { Medicine } from "../types/Medicine";
+import { Prescription } from "../types/Prescription";
+import dayjs from "dayjs";
+import { toast } from "react-toastify";
 
-const DIAGNOSES = [
-  { id: 1, code: "A01", description: "Sốt xuất huyết" },
-  { id: 2, code: "B02", description: "Viêm họng" },
-];
-
-const MEDICINES = [
-  { id: 1, name: "Paracetamol 500mg" },
-  { id: 2, name: "Amoxicillin 500mg" },
-];
+// Hàm chuẩn hoá dữ liệu initialValues cho Form
+function normalizeInitialValues(pres?: Prescription | null) {
+  if (!pres) return undefined;
+  return {
+    patientId: pres.patientId,
+    diagnosisIds: pres.diagnoses
+      ? pres.diagnoses.map((d: any) => d.diagnosisId || d.id)
+      : [],
+    medicines: pres.items
+      ? pres.items.map((item: any) => ({
+          medicineId: item.medicineId || item.id,
+          quantity: item.quantity,
+          instruction: item.instruction,
+        }))
+      : [],
+    advice: pres.advice ?? "",
+    followUpDate: pres.followUpDate ? dayjs(pres.followUpDate) : null,
+  };
+}
 
 export default function PrescriptionForm({
   onSuccess,
   onCancel,
+  editingPrescription,
 }: {
   onSuccess?: () => void;
   onCancel?: () => void;
+  editingPrescription?: Prescription | null;
 }) {
   const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
   const [medicines, setMedicines] = useState<Medicine[]>([]);
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+
+  // Load danh sách chẩn đoán + thuốc một lần
   useEffect(() => {
     fetchDiagnoses();
     fetchMedicines();
   }, []);
   const fetchDiagnoses = async () => {
     const response = await fetch("/api/diagnoses");
-    const data = await response.json();
-    setDiagnoses(data);
+    setDiagnoses(await response.json());
   };
   const fetchMedicines = async () => {
     const response = await fetch("/api/medicines");
-    const data = await response.json();
-    setMedicines(data);
+    setMedicines(await response.json());
   };
-  const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
-  const [patientId, setPatientId] = useState<string | undefined>(undefined);
-  const [medicineId, setMedicineId] = useState<string | undefined>(undefined);
-  const [diagnosisIds, setDiagnosisIds] = useState<string[]>([]);
 
-  const onFinish = (values: any) => {
-    const data = {
-      patientId: values.patientId,
-      diagnosisIds: values.diagnosisIds,
-      medicines: values.medicines,
-      advice: values.advice,
-      followUpDate: values.followUpDate,
-    };
-    setLoading(true);
-    console.log(data);
-    setLoading(false);
+  // Khi editingPrescription thay đổi, set lại initialValues cho form
+  useEffect(() => {
     form.resetFields();
-    if (onSuccess) onSuccess();
+    const initial = normalizeInitialValues(editingPrescription);
+    if (initial) {
+      form.setFieldsValue(initial);
+    } else {
+      form.setFieldsValue({
+        patientId: undefined,
+        diagnosisIds: [],
+        medicines: [],
+        advice: "",
+        followUpDate: null,
+      });
+    }
+  }, [editingPrescription, form]);
+
+  // Submit
+  const onFinish = async (values: any) => {
+    setLoading(true);
+    try {
+      // Nếu đang update, cần gửi prescription id & đúng dữ liệu cho backend
+      const payload = {
+        ...(editingPrescription?.id ? { id: editingPrescription.id } : {}),
+        patientId: values.patientId,
+        diagnosisIds: values.diagnosisIds,
+        medicines: values.medicines,
+        advice: values.advice,
+        followUpDate: values.followUpDate
+          ? values.followUpDate.toISOString()
+          : null,
+      };
+      await fetch(`/api/prescriptions`, {
+        method: editingPrescription?.id ? "PUT" : "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      toast.success(
+        editingPrescription?.id
+          ? "Cập nhật đơn thuốc thành công!"
+          : "Tạo mới đơn thuốc thành công!"
+      );
+      form.resetFields();
+      if (onSuccess) onSuccess();
+    } catch (err) {
+      message.error("Có lỗi khi lưu đơn thuốc");
+    }
+    setLoading(false);
   };
 
   return (
@@ -74,9 +122,7 @@ export default function PrescriptionForm({
       form={form}
       layout="vertical"
       onFinish={onFinish}
-      initialValues={{
-        medicines: [{ medicineId: undefined, quantity: 1, instruction: "" }],
-      }}
+      initialValues={normalizeInitialValues(editingPrescription)}
     >
       {/* 1. Chọn bệnh nhân */}
       <Form.Item
@@ -84,10 +130,7 @@ export default function PrescriptionForm({
         name="patientId"
         rules={[{ required: true, message: "Vui lòng chọn bệnh nhân." }]}
       >
-        <PatientSelector
-          value={patientId}
-          onChange={(value) => setPatientId(value)}
-        />
+        <PatientSelector />
       </Form.Item>
 
       {/* 2. Chẩn đoán */}
@@ -99,7 +142,7 @@ export default function PrescriptionForm({
         ]}
       >
         <Select
-          mode="multiple" // Nếu bạn muốn chọn nhiều, giữ lại dòng này, nếu không thì bỏ đi
+          mode="multiple"
           showSearch
           placeholder="Nhập mã, tên bệnh"
           filterOption={(input, option) =>
@@ -107,10 +150,9 @@ export default function PrescriptionForm({
           }
           options={diagnoses.map((d) => ({
             value: d.id,
-            label: `${d.code} - ${d.description}`, // label chứa cả mã và mô tả
+            label: `${d.code} - ${d.description}`,
           }))}
           style={{ width: "100%" }}
-          onChange={(value) => setDiagnosisIds(value)}
         />
       </Form.Item>
 
@@ -135,8 +177,6 @@ export default function PrescriptionForm({
                       value: m.id,
                       label: m.name,
                     }))}
-                    value={medicineId}
-                    onChange={(value) => setMedicineId(value)}
                     style={{ width: 170 }}
                   />
                 </Form.Item>
@@ -183,7 +223,7 @@ export default function PrescriptionForm({
       <Form.Item>
         <Space>
           <Button type="primary" htmlType="submit" loading={loading}>
-            Lưu đơn thuốc
+            {editingPrescription?.id ? "Cập nhật đơn thuốc" : "Lưu đơn thuốc"}
           </Button>
           {onCancel && (
             <Button onClick={onCancel} disabled={loading}>

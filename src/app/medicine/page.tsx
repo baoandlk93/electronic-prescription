@@ -49,7 +49,7 @@ export default function MedicinePage() {
   }, []);
 
   return (
-    <div className="flex flex-col min-h-screen overflow-auto bg-gray-50 text-gray-900 p-16">
+    <div className="flex flex-col min-h-screen overflow-hidden bg-gray-50 text-gray-900 px-16 py-8">
       <h1 className="text-2xl font-bold mb-4 text-center">Quản lý thuốc</h1>
       <div className="flex justify-start mb-4">
         <Button

@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "antd";
-import { GiMedicines } from "react-icons/gi";
 import { useState, useEffect } from "react";
 import AddPatientForm from "@/components/AddPatientForm";
 import { Patient } from "@/types/Patient";

@@ -10,7 +10,7 @@ export default function AddDiagnosisForm({
   editingDiagnosis,
 }: {
   onSuccess?: () => void;
-  editingDiagnosis?: Diagnosis;
+  editingDiagnosis: Diagnosis | null;
 }) {
   const [form] = Form.useForm();
 

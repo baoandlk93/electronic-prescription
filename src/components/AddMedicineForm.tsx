@@ -10,7 +10,7 @@ export default function AddMedicineForm({
   editingMedicine,
 }: {
   onSuccess?: () => void;
-  editingMedicine?: Medicine;
+  editingMedicine: Medicine | null;
 }) {
   const [form] = Form.useForm();
 

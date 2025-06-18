@@ -3,18 +3,16 @@
 import { Button, Modal } from "antd";
 import DataTable from "@/components/DataTable";
 import { useEffect, useState } from "react";
-import AddMedicineForm from "@/components/AddMedicineForm";
 import { GiMedicines } from "react-icons/gi";
-import { Medicine } from "@/types/Medicine";
-import DeleteMedicineModal from "@/components/DeleteMedicineModal";
-import AddIllnessForm from "@/components/AddDiagnosisForm";
-import AddDiagnosisForm from "@/components/AddDiagnosisForm";
+import { Diagnosis } from "@/types/Diagnosis";
 import DeleteModal from "@/components/DeleteModal";
 import { toast } from "react-toastify";
+import AddDiagnosisForm from "@/components/AddDiagnosisForm";
+
 export default function DiagnosisPage() {
   const [openDiagnosisModal, setOpenDiagnosisModal] = useState(false);
-  const [diagnoses, setDiagnoses] = useState<Medicine[]>([]);
-  const [editingDiagnosis, setEditingDiagnosis] = useState<Medicine | null>(
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+  const [editingDiagnosis, setEditingDiagnosis] = useState<Diagnosis | null>(
     null
   );
   const [modalOpen, setModalOpen] = useState(false);
@@ -27,13 +25,13 @@ export default function DiagnosisPage() {
     setModalOpen(true);
   }
 
-  const fetchMedicines = async () => {
+  const fetchDiagnoses = async () => {
     const response = await fetch("/api/diagnoses");
     const data = await response.json();
     setDiagnoses(data);
   };
   useEffect(() => {
-    fetchMedicines();
+    fetchDiagnoses();
   }, []);
   const handleDelete = async () => {
     if (!diagnosisIdToDelete) return;
@@ -43,7 +41,7 @@ export default function DiagnosisPage() {
       body: JSON.stringify({ id: diagnosisIdToDelete }),
     })
       .then(() => {
-        fetchMedicines();
+        fetchDiagnoses();
         setModalOpen(false);
         toast.success("Xóa bệnh thành công!");
       })
@@ -91,7 +89,7 @@ export default function DiagnosisPage() {
           {
             title: "Hành động",
             key: "action",
-            render: (record: Medicine) => (
+            render: (record: Diagnosis) => (
               <>
                 <Button
                   className="mr-2"
@@ -129,7 +127,7 @@ export default function DiagnosisPage() {
         <AddDiagnosisForm
           onSuccess={() => {
             setOpenDiagnosisModal(false);
-            fetchMedicines();
+            fetchDiagnoses();
           }}
           editingDiagnosis={editingDiagnosis}
         />

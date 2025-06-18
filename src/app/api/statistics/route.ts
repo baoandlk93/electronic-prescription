@@ -21,13 +21,14 @@ export async function GET(req: Request) {
   const format = formatMap[groupBy];
 
   // Prescription thống kê theo createAt
-  const prescriptionStats = await prisma.$queryRawUnsafe<any[]>(`
-    SELECT DATE_FORMAT(createdAt, '${format}') as time, COUNT(*) as count
-    FROM Prescription
-    WHERE createdAt BETWEEN ? AND ?
-    GROUP BY time
-    ORDER BY time
-  `, startDate, endDate);
+  const prescriptionStats = await prisma.$queryRawUnsafe(
+    `SELECT DATE_FORMAT(createdAt, '${format}') as time, COUNT(*) as count
+     FROM Prescription
+     WHERE createdAt BETWEEN ? AND ?
+     GROUP BY time
+     ORDER BY time`,
+    startDate, endDate
+  ) as Array<{ time: string; count: number }>;
 
   // Tổng số bệnh nhân (không thể thống kê theo ngày/tháng/năm do không có createAt)
   const patientCountResult = await prisma.patient.count(); // tổng số bệnh nhân hiện tại

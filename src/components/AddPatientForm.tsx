@@ -9,7 +9,7 @@ export default function AddPatientForm({
   editingPatient,
 }: {
   onSuccess?: () => void;
-  editingPatient?: Patient;
+  editingPatient: Patient | null;
 }) {
   const [form] = Form.useForm();
   useEffect(() => {
