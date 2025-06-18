@@ -35,25 +35,25 @@ export async function GET(
 // DELETE đơn thuốc theo id
 export async function DELETE(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const id = Number(params.id);
+  const { id } = await params;
 
-  if (!id || isNaN(id)) {
+  if (!id || isNaN(Number(id))) {
     return NextResponse.json({ error: 'Thiếu hoặc sai ID đơn thuốc' }, { status: 400 });
   }
 
   try {
     await prisma.prescriptionDiagnosis.deleteMany({
-      where: { prescriptionId: id },
+      where: { prescriptionId: Number(id) },
     });
 
     await prisma.prescriptionMedicine.deleteMany({
-      where: { prescriptionId: id },
+      where: { prescriptionId: Number(id) },
     });
 
     await prisma.prescription.delete({
-      where: { id },
+      where: { id: Number(id) },
     });
 
     return NextResponse.json({ success: true });

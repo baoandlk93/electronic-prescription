@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Descriptions, Table } from "antd";
 import dayjs from "dayjs";
-import { Prescription } from "../types/Prescription";
+import { PrescriptionDetail } from "../types/PrescriptionDetail";
 
 const PrescriptionDetailModal = ({
   visible,
@@ -10,7 +10,7 @@ const PrescriptionDetailModal = ({
 }: {
   visible: boolean;
   onClose: () => void;
-  prescriptionDetails: Prescription | null;
+  prescriptionDetails: PrescriptionDetail | null;
 }) => {
   // Table columns for medicines in prescription
   const medicineColumns = [
@@ -23,7 +23,7 @@ const PrescriptionDetailModal = ({
   return (
     <Modal
       title="Chi tiết đơn thuốc"
-      visible={visible}
+      open={visible}
       onCancel={onClose}
       footer={null}
       width={700}
@@ -55,7 +55,7 @@ const PrescriptionDetailModal = ({
             .join("\n")}
         </Descriptions.Item>
         <Descriptions.Item label="Ngày tạo">
-          {dayjs(prescriptionDetails?.date).format("DD/MM/YYYY")}
+          {dayjs(prescriptionDetails?.createdAt).format("DD/MM/YYYY")}
         </Descriptions.Item>
         <Descriptions.Item label="Lời dặn">
           {prescriptionDetails?.advice}
@@ -72,7 +72,7 @@ const PrescriptionDetailModal = ({
       <Table
         columns={medicineColumns}
         dataSource={prescriptionDetails?.items || []}
-        rowKey={(record, idx) => idx}
+        rowKey={(record, idx) => record.id ?? idx?.toString() ?? "0"}
         pagination={false}
         size="small"
       />

@@ -6,12 +6,9 @@ export interface Prescription {
     code: string;
     name: string;
     date: string;
-    patientId: string;
     patient: Patient;
     diagnoses: Diagnosis[];
     medicines: Medicine[];
-    items: Medicine[];
     advice: string;
     followUpDate: string;
-    createdAt: string;
 }

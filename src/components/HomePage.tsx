@@ -6,6 +6,7 @@ import AddMedicineForm from "@/components/AddMedicineForm";
 import PrescriptionForm from "@/components/PrescriptionForm";
 import { Prescription } from "@/types/Prescription";
 import dayjs from "dayjs";
+import Link from "next/link";
 
 export default function HomePage() {
   const [openPatientModal, setOpenPatientModal] = useState(false);
@@ -99,17 +100,17 @@ export default function HomePage() {
       <div className="overflow-auto">
         <Card
           title="Đơn thuốc gần đây"
-          extra={<a href="/prescription">Tất cả</a>}
+          extra={<Link href="/prescription">Tất cả</Link>}
         >
           <List
-            dataSource={recentPrescriptions}
-            renderItem={(item) => (
+            dataSource={recentPrescriptions || []}
+            renderItem={(item: Prescription) => (
               <List.Item
-                actions={[<a href={`/prescription/${item.id}`}>Xem</a>]}
+                actions={[<Link href={`/prescription/${item.id}`}>Xem</Link>]}
               >
                 <List.Item.Meta
-                  title={`${item.code} - ${item.patientId}`}
-                  description={`Ngày: ${dayjs(item.createdAt).format(
+                  title={`${item.code} - ${item?.patient?.name}`}
+                  description={`Ngày: ${dayjs(item?.date).format(
                     "DD/MM/YYYY HH:mm:ss"
                   )}`}
                 />
@@ -127,7 +128,10 @@ export default function HomePage() {
         footer={null}
         destroyOnHidden
       >
-        <AddPatientForm onSuccess={() => setOpenPatientModal(false)} />
+        <AddPatientForm
+          onSuccess={() => setOpenPatientModal(false)}
+          editingPatient={null}
+        />
       </Modal>
 
       {/* Modal Thêm Thuốc */}
@@ -138,7 +142,10 @@ export default function HomePage() {
         footer={null}
         destroyOnHidden
       >
-        <AddMedicineForm onSuccess={() => setOpenMedicineModal(false)} />
+        <AddMedicineForm
+          onSuccess={() => setOpenMedicineModal(false)}
+          editingMedicine={null}
+        />
       </Modal>
 
       {/* Modal Thêm Đơn Thuốc */}
@@ -150,9 +157,10 @@ export default function HomePage() {
         destroyOnHidden
       >
         <PrescriptionForm
-          onSuccess={(item) => {
+          editingPrescription={null}
+          onSuccess={() => {
             setOpenPrescriptionModal(false);
-            setRecentPrescriptions([...recentPrescriptions, item]);
+            fetchRecentPrescriptions();
           }}
           onCancel={() => setOpenPrescriptionModal(false)}
         />

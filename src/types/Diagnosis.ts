@@ -1,6 +1,8 @@
+import { DiagnosisDetail } from "./DiagnosisDetail";
+
 export interface Diagnosis {
-    id: string;
-    name: string;
-    code: string;
-    description: string;
+    diagnosisId: string;
+    prescriptionId: string;
+    note: string;
+    diagnosis: DiagnosisDetail;
 }

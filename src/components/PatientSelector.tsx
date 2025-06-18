@@ -9,8 +9,8 @@ export default function PatientSelector({
   value,
   onChange,
 }: {
-  value: string;
-  onChange: (value: string) => void;
+  value: string | undefined;
+  onChange: (value: string | undefined) => void;
 }) {
   const [patients, setPatients] = useState<Patient[]>([]);
   useEffect(() => {

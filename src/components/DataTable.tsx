@@ -2,14 +2,14 @@
 
 import { Table } from "antd";
 import { createStyles } from "antd-style";
-const useStyle = createStyles(({ css, token }) => {
-  const { antCls } = token;
+
+const useStyle = createStyles(({ css }) => {
   return {
     customTable: css`
-      ${antCls}-table {
-        ${antCls}-table-container {
-          ${antCls}-table-body,
-          ${antCls}-table-content {
+      .ant-table {
+        .ant-table-container {
+          .ant-table-body,
+          .ant-table-content {
             scrollbar-width: thin;
             scrollbar-color: #eaeaea transparent;
             scrollbar-gutter: stable;
@@ -34,7 +34,8 @@ export default function DataTable({
         columns={columns}
         dataSource={dataSource}
         className={styles.customTable}
-        scroll={{ x: "max-content", y: 55 * 5 }}
+        scroll={{ x: 1200, y: 55 * 5 }} // x: nên set số, ví dụ 1200 hoặc "max-content"
+        sticky // Giúp fix header khi cuộn
       />
     </div>
   );

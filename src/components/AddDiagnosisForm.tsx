@@ -3,14 +3,14 @@
 import { useEffect } from "react";
 import { Form, Input, Button } from "antd";
 import { toast } from "react-toastify";
-import { Diagnosis } from "../types/Diagnosis";
+import { DiagnosisDetail } from "../types/DiagnosisDetail";
 
 export default function AddDiagnosisForm({
   onSuccess,
   editingDiagnosis,
 }: {
   onSuccess?: () => void;
-  editingDiagnosis: Diagnosis | null;
+  editingDiagnosis: DiagnosisDetail | null;
 }) {
   const [form] = Form.useForm();
 
@@ -22,7 +22,7 @@ export default function AddDiagnosisForm({
     }
   }, [editingDiagnosis]);
 
-  const handleFinish = async (values: Diagnosis) => {
+  const handleFinish = async (values: DiagnosisDetail) => {
     try {
       const method = editingDiagnosis ? "PUT" : "POST";
       const response = await fetch("/api/diagnoses", {

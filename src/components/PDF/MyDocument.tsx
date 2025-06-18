@@ -8,7 +8,8 @@ import {
   Font,
 } from "@react-pdf/renderer";
 import dayjs from "dayjs";
-import { Prescription } from "@prisma/client";
+import { PaperSize } from "@/types/PaperSize";
+import { PrescriptionDetail } from "@/types/PrescriptionDetail";
 
 // Đăng ký font Roboto hỗ trợ tiếng Việt
 Font.register({
@@ -105,14 +106,14 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
 });
-
+import { calculateAge } from "@/lib/ultility";
 // Main component
 export const MyDocument = ({
   prescriptionDetails,
   size,
 }: {
-  prescriptionDetails: Prescription | null; // hoặc Prescription
-  size: string;
+  prescriptionDetails: PrescriptionDetail | null;
+  size: PaperSize;
 }) => (
   <Document language="vi">
     <Page size={size} style={styles.page} wrap>
@@ -175,7 +176,8 @@ export const MyDocument = ({
               dayjs(prescriptionDetails?.patient?.dateOfBirth).format(
                 "DD/MM/YYYY"
               )}
-            {"  "} - {prescriptionDetails?.patient?.age || ""}
+            {"  "} -{" "}
+            {calculateAge(prescriptionDetails?.patient?.dateOfBirth) && "Tuổi "}
           </Text>
           <Text style={{ width: "14%" }}>
             <Text style={styles.bold}>GT:</Text>{" "}
@@ -222,7 +224,7 @@ export const MyDocument = ({
             <Text style={styles.thQty}>{item?.quantity}</Text>
             <Text style={styles.thUnit}>{item?.medicine?.unit}</Text>
             <Text style={styles.thNote}>
-              {item?.instruction || item?.usage}
+              {item?.instruction || item?.instruction}
             </Text>
           </View>
         ))}
@@ -247,9 +249,7 @@ export const MyDocument = ({
         <View style={{ alignItems: "center" }}>
           <Text>Bác sĩ</Text>
           <Text style={styles.signatureText}>(Ký, Họ tên)</Text>
-          <Text style={{ marginTop: 32 }}>
-            {prescriptionDetails?.doctor?.name || "Huỳnh Minh Tâm"}
-          </Text>
+          <Text style={{ marginTop: 32 }}>Huỳnh Minh Tâm</Text>
         </View>
       </View>
       {/* Ghi chú */}

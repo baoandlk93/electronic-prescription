@@ -12,17 +12,17 @@ import {
 } from "antd";
 import { useState, useEffect } from "react";
 import PatientSelector from "./PatientSelector";
-import { Diagnosis } from "../types/Diagnosis";
+import { DiagnosisDetail } from "../types/DiagnosisDetail";
 import { Medicine } from "../types/Medicine";
-import { Prescription } from "../types/Prescription";
+import { PrescriptionDetail } from "../types/PrescriptionDetail";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
 
 // Hàm chuẩn hoá dữ liệu initialValues cho Form
-function normalizeInitialValues(pres?: Prescription | null) {
+function normalizeInitialValues(pres?: PrescriptionDetail | null) {
   if (!pres) return undefined;
   return {
-    patientId: pres.patientId,
+    patientId: pres.patient?.id,
     diagnosisIds: pres.diagnoses
       ? pres.diagnoses.map((d: any) => d.diagnosisId || d.id)
       : [],
@@ -45,9 +45,9 @@ export default function PrescriptionForm({
 }: {
   onSuccess?: () => void;
   onCancel?: () => void;
-  editingPrescription?: Prescription | null;
+  editingPrescription?: PrescriptionDetail | null;
 }) {
-  const [diagnoses, setDiagnoses] = useState<Diagnosis[]>([]);
+  const [diagnoses, setDiagnoses] = useState<DiagnosisDetail[]>([]);
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
@@ -130,7 +130,10 @@ export default function PrescriptionForm({
         name="patientId"
         rules={[{ required: true, message: "Vui lòng chọn bệnh nhân." }]}
       >
-        <PatientSelector />
+        <PatientSelector
+          value={form.getFieldValue("patientId")}
+          onChange={(value) => form.setFieldValue("patientId", value)}
+        />
       </Form.Item>
 
       {/* 2. Chẩn đoán */}
