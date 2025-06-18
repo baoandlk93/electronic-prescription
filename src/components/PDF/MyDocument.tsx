@@ -1,0 +1,264 @@
+import React from "react";
+import {
+  Page,
+  Text,
+  View,
+  Document,
+  StyleSheet,
+  Font,
+} from "@react-pdf/renderer";
+import dayjs from "dayjs";
+import { Prescription } from "@prisma/client";
+
+// Đăng ký font Roboto hỗ trợ tiếng Việt
+Font.register({
+  family: "Roboto",
+  src: "Roboto/static/Roboto-Regular.ttf",
+  fontStyle: "normal",
+  fontWeight: "normal",
+});
+Font.register({
+  family: "Roboto",
+  src: "Roboto/static/Roboto-Bold.ttf",
+  fontWeight: "bold",
+});
+Font.register({
+  family: "Roboto",
+  src: "Roboto/static/Roboto-Italic.ttf",
+  fontStyle: "italic",
+});
+
+// Styles
+const styles = StyleSheet.create({
+  page: {
+    fontFamily: "Roboto",
+    fontSize: 12,
+    padding: 24,
+    backgroundColor: "#fff",
+  },
+  headerClinic: {
+    fontSize: 11,
+    marginBottom: 4,
+    textAlign: "left",
+    flexDirection: "row",
+    gap: 6,
+  },
+  clinicName: { fontSize: 13, fontWeight: "bold" },
+  clinicSub: { fontStyle: "italic", fontSize: 10 },
+  title: {
+    fontSize: 18,
+    textAlign: "center",
+    fontWeight: "bold",
+    marginVertical: 8,
+  },
+  box: {
+    borderWidth: 1,
+    borderColor: "#222",
+    borderRadius: 3,
+    padding: 8,
+    marginBottom: 10,
+  },
+  row: { flexDirection: "row", marginBottom: 2 },
+  colLeft: { width: "24%" },
+  col: { width: "38%" },
+  bold: { fontWeight: "bold" },
+  tableHeader: {
+    flexDirection: "row",
+    fontWeight: "bold",
+    borderBottomWidth: 1,
+    marginBottom: 3,
+    backgroundColor: "#efefef",
+    paddingVertical: 4,
+  },
+  tableRow: {
+    flexDirection: "row",
+    borderBottomWidth: 0.5,
+    alignItems: "flex-start",
+    paddingVertical: 2,
+  },
+  thStt: { width: "7%", textAlign: "center" },
+  thName: { width: "30%" },
+  thQty: { width: "10%", textAlign: "center" },
+  thUnit: { width: "11%", textAlign: "center" },
+  thNote: { width: "42%" },
+  signature: {
+    marginTop: 24,
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  signatureText: { fontSize: 12, fontStyle: "italic" },
+  footer: {
+    textAlign: "center",
+    fontStyle: "italic",
+    marginTop: 14,
+    fontSize: 12,
+  },
+  watermark: {
+    position: "absolute",
+    top: "46%",
+    left: "15%",
+    opacity: 0.15,
+    fontSize: 32,
+    color: "#B8B690",
+    fontWeight: "bold",
+    transform: "rotate(-18deg)",
+    zIndex: 0,
+  },
+});
+
+// Main component
+export const MyDocument = ({
+  prescriptionDetails,
+  size,
+}: {
+  prescriptionDetails: Prescription | null; // hoặc Prescription
+  size: string;
+}) => (
+  <Document language="vi">
+    <Page size={size} style={styles.page} wrap>
+      {/* Watermark chìm */}
+      <Text style={styles.watermark}>tinnghe.com</Text>
+
+      {/* Header phòng khám */}
+      <View style={styles.headerClinic}>
+        <View style={{ width: 56, marginRight: 12 }}>
+          {/* Chèn logo nếu muốn */}
+          {/* <Image src="/logo.png" style={{ width: 48, height: 48 }} /> */}
+        </View>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.clinicName}>Phòng Khám Bác sỹ Tâm</Text>
+          <Text>
+            Địa chỉ: 207 Hoàng Văn Thụ, Phương Sài, Nha Trang, Khánh Hòa 650000,
+            Việt Nam
+          </Text>
+          <Text>ĐT: 0983314039</Text>
+          <Text style={styles.clinicSub}>(Phòng khám chuyên bệnh phổi)</Text>
+        </View>
+        <View style={{ alignItems: "flex-end" }}>
+          <Text>{dayjs().format("DD/MM/YYYY")}</Text>
+        </View>
+      </View>
+
+      {/* Tiêu đề */}
+      <Text style={styles.title}>ĐƠN THUỐC</Text>
+      {/* barcode (nếu cần) */}
+      {/* <Image src={barcodeUrl} style={{ width: 130, height: 30, alignSelf: "center" }} /> */}
+
+      {/* Khung thông tin */}
+      <View style={styles.box}>
+        {/* Dòng 1: Mã BN, ngày, mã đơn */}
+        <View style={styles.row}>
+          <Text style={{ width: "25%" }}>
+            <Text style={styles.bold}>Mã BN:</Text>{" "}
+            {prescriptionDetails?.patient?.code}
+          </Text>
+          <Text style={{ width: "35%" }}>
+            <Text style={styles.bold}>Ngày:</Text>{" "}
+            {prescriptionDetails?.createdAt &&
+              dayjs(prescriptionDetails.createdAt).format("DD/MM/YYYY HH:mm")}
+          </Text>
+          <Text style={{ width: "40%" }}>
+            <Text style={styles.bold}>Mã đơn:</Text> {prescriptionDetails?.code}
+          </Text>
+        </View>
+        {/* Dòng 2: Họ tên, SN/tuổi/GT */}
+        <View style={styles.row}>
+          <Text style={{ width: "29%" }}>
+            <Text style={styles.bold}>Họ tên:</Text>{" "}
+            <Text style={styles.bold}>
+              {prescriptionDetails?.patient?.name}
+            </Text>
+          </Text>
+          <Text style={{ width: "29%" }}>
+            <Text style={styles.bold}>SN:</Text>{" "}
+            {prescriptionDetails?.patient?.dateOfBirth &&
+              dayjs(prescriptionDetails?.patient?.dateOfBirth).format(
+                "DD/MM/YYYY"
+              )}
+            {"  "} - {prescriptionDetails?.patient?.age || ""}
+          </Text>
+          <Text style={{ width: "14%" }}>
+            <Text style={styles.bold}>GT:</Text>{" "}
+            {prescriptionDetails?.patient?.gender}
+          </Text>
+        </View>
+        {/* Dòng 3: Địa chỉ, ĐT */}
+        <View style={styles.row}>
+          <Text style={{ width: "60%" }}>
+            <Text style={styles.bold}>Địa chỉ:</Text>{" "}
+            {prescriptionDetails?.patient?.address}
+          </Text>
+          <Text>
+            <Text style={styles.bold}>ĐT:</Text>{" "}
+            {prescriptionDetails?.patient?.phone}
+          </Text>
+        </View>
+        {/* Dòng 4: Chẩn đoán */}
+        <View style={styles.row}>
+          <Text style={{ width: "100%" }}>
+            <Text style={styles.bold}>Chẩn đoán:</Text>{" "}
+            {prescriptionDetails?.diagnoses
+              ?.map((d) => d.diagnosis.name)
+              .join(", ")}
+          </Text>
+        </View>
+      </View>
+
+      {/* BẢNG thuốc */}
+      <View style={styles.box}>
+        {/* Table Header */}
+        <View style={styles.tableHeader}>
+          <Text style={styles.thStt}>STT</Text>
+          <Text style={styles.thName}>Mặt hàng thuốc, vật tư</Text>
+          <Text style={styles.thQty}>SL</Text>
+          <Text style={styles.thUnit}>ĐV</Text>
+          <Text style={styles.thNote}>Cách dùng</Text>
+        </View>
+        {/* Table Rows */}
+        {prescriptionDetails?.items?.map((item, idx) => (
+          <View key={item.id || idx} style={styles.tableRow}>
+            <Text style={styles.thStt}>{idx + 1}</Text>
+            <Text style={styles.thName}>{item?.medicine?.name}</Text>
+            <Text style={styles.thQty}>{item?.quantity}</Text>
+            <Text style={styles.thUnit}>{item?.medicine?.unit}</Text>
+            <Text style={styles.thNote}>
+              {item?.instruction || item?.usage}
+            </Text>
+          </View>
+        ))}
+      </View>
+
+      {/* Tái khám + Lời dặn */}
+      <Text>
+        <Text style={styles.bold}>Tái khám:</Text>{" "}
+        {prescriptionDetails?.followUpDate &&
+          dayjs(prescriptionDetails.followUpDate).format("DD/MM/YYYY")}
+      </Text>
+      <Text style={{ marginTop: 3, marginBottom: 2 }}>
+        <Text style={styles.bold}>Lời dặn bệnh nhân:</Text>
+      </Text>
+      <View style={{ marginLeft: 8, marginBottom: 3 }}>
+        <Text>{prescriptionDetails?.advice}</Text>
+      </View>
+
+      {/* Ghi chú & chữ ký */}
+      <View style={styles.signature}>
+        <Text style={{ width: "55%" }}></Text>
+        <View style={{ alignItems: "center" }}>
+          <Text>Bác sĩ</Text>
+          <Text style={styles.signatureText}>(Ký, Họ tên)</Text>
+          <Text style={{ marginTop: 32 }}>
+            {prescriptionDetails?.doctor?.name || "Huỳnh Minh Tâm"}
+          </Text>
+        </View>
+      </View>
+      {/* Ghi chú */}
+      <Text style={{ marginTop: 8 }}>
+        <Text style={styles.bold}>Ghi chú:</Text>
+      </Text>
+      <Text style={{ fontStyle: "italic", marginLeft: 8 }}>
+        Uống thuốc đúng hướng dẫn Bác sỹ và tái khám đúng hẹn!
+      </Text>
+    </Page>
+  </Document>
+);
