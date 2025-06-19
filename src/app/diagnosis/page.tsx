@@ -1,13 +1,13 @@
 "use client";
 
 import { Button, Modal } from "antd";
-import DataTable from "@/components/DataTable";
+import DataTable from "@/components/ultility/DataTable";
 import { useEffect, useState } from "react";
 import { GiMedicines } from "react-icons/gi";
 import { DiagnosisDetail } from "@/types/DiagnosisDetail";
-import DeleteModal from "@/components/DeleteModal";
+import DeleteModal from "@/components/ultility/DeleteModal";
 import { toast } from "react-toastify";
-import AddDiagnosisForm from "@/components/AddDiagnosisForm";
+import AddDiagnosisForm from "@/components/form/AddDiagnosisForm";
 import DiseaseImport from "@/components/xlsx/DiseaseImport";
 
 export default function DiagnosisPage() {

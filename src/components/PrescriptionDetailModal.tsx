@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Descriptions, Table } from "antd";
+import { Modal, Descriptions, Table, Popover, Tag, Button } from "antd";
 import dayjs from "dayjs";
 import { PrescriptionDetail } from "../types/PrescriptionDetail";
 
@@ -7,19 +7,32 @@ const PrescriptionDetailModal = ({
   visible,
   onClose,
   prescriptionDetails,
+  setOpenPdfModal,
 }: {
   visible: boolean;
   onClose: () => void;
   prescriptionDetails: PrescriptionDetail | null;
+  setOpenPdfModal: (open: boolean) => void;
 }) => {
   // Table columns for medicines in prescription
   const medicineColumns = [
     { title: "Tên thuốc", dataIndex: ["medicine", "name"], key: "name" },
     { title: "Số lượng", dataIndex: "quantity", key: "quantity" },
     { title: "Đơn vị", dataIndex: ["medicine", "unit"], key: "unit" },
-    { title: "Cách dùng", dataIndex: "usage", key: "usage" },
+    { title: "Cách dùng", dataIndex: "instruction", key: "instruction" },
   ];
-  console.log(prescriptionDetails);
+  if (!prescriptionDetails) return null;
+  const diagnoses = prescriptionDetails.diagnoses?.map((d) => (
+    <Popover
+      title={d.diagnosis.name}
+      content={<div>{d.diagnosis.description}</div>}
+      key={d.diagnosis.id}
+    >
+      <Tag color="#2db7f5" className="cursor-pointer">
+        {d.diagnosis.code}
+      </Tag>
+    </Popover>
+  ));
   return (
     <Modal
       title="Chi tiết đơn thuốc"
@@ -49,11 +62,7 @@ const PrescriptionDetailModal = ({
             <> ({prescriptionDetails?.patient.gender})</>
           )}
         </Descriptions.Item>
-        <Descriptions.Item label="Chẩn đoán">
-          {prescriptionDetails?.diagnoses
-            ?.map((d) => d.diagnosis.code)
-            .join("\n")}
-        </Descriptions.Item>
+        <Descriptions.Item label="Chẩn đoán">{diagnoses}</Descriptions.Item>
         <Descriptions.Item label="Ngày tạo">
           {dayjs(prescriptionDetails?.createdAt).format("DD/MM/YYYY")}
         </Descriptions.Item>
@@ -76,6 +85,18 @@ const PrescriptionDetailModal = ({
         pagination={false}
         size="small"
       />
+      <div className="mt-4 flex justify-center">
+        <Button
+          type="primary"
+          danger
+          size="large"
+          onClick={() => {
+            setOpenPdfModal(true);
+          }}
+        >
+          Xem PDF
+        </Button>
+      </div>
     </Modal>
   );
 };

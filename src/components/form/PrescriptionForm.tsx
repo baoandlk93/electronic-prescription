@@ -8,13 +8,12 @@ import {
   InputNumber,
   DatePicker,
   Space,
-  message,
 } from "antd";
 import { useState, useEffect } from "react";
-import PatientSelector from "./PatientSelector";
-import { DiagnosisDetail } from "../types/DiagnosisDetail";
-import { Medicine } from "../types/Medicine";
-import { PrescriptionDetail } from "../types/PrescriptionDetail";
+import PatientSelector from "../PatientSelector";
+import { DiagnosisDetail } from "../../types/DiagnosisDetail";
+import { Medicine } from "../../types/Medicine";
+import { PrescriptionDetail } from "../../types/PrescriptionDetail";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
 
@@ -51,6 +50,7 @@ export default function PrescriptionForm({
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+  const [count, setCount] = useState(0);
 
   // Load danh sách chẩn đoán + thuốc một lần
   useEffect(() => {
@@ -75,6 +75,7 @@ export default function PrescriptionForm({
     } else {
       form.setFieldsValue({
         patientId: undefined,
+        code: "",
         diagnosisIds: [],
         medicines: [],
         advice: "",
@@ -82,14 +83,53 @@ export default function PrescriptionForm({
       });
     }
   }, [editingPrescription, form]);
+  // Hàm lấy ngày hôm nay dưới dạng string
+  function getTodayStr() {
+    const now = new Date();
+    return `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+  }
+
+  // Khi component mount lên
+  useEffect(() => {
+    const lastDate = localStorage.getItem("counter-date");
+    const savedCount = parseInt(localStorage.getItem("counter") || "0", 10);
+    const today = getTodayStr();
+
+    if (lastDate === today) {
+      setCount(savedCount);
+    } else {
+      setCount(0);
+      localStorage.setItem("counter", "0");
+      localStorage.setItem("counter-date", today);
+    }
+  }, []);
+
+  // Hàm tăng số đếm
+  const handleIncrease = () => {
+    const today = getTodayStr();
+    const lastDate = localStorage.getItem("counter-date");
+    let currCount = 0;
+    if (lastDate === today) {
+      currCount = parseInt(localStorage.getItem("counter") || "0", 10) + 1;
+    } else {
+      currCount = 1;
+      localStorage.setItem("counter-date", today);
+    }
+    setCount(currCount);
+    localStorage.setItem("counter", currCount.toString());
+  };
 
   // Submit
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
-      // Nếu đang update, cần gửi prescription id & đúng dữ liệu cho backend
       const payload = {
         ...(editingPrescription?.id ? { id: editingPrescription.id } : {}),
+        ...(editingPrescription?.code
+          ? { code: editingPrescription.code }
+          : {
+              code: `ĐT${dayjs().format("DDMMYYYY")}${count}`,
+            }),
         patientId: values.patientId,
         diagnosisIds: values.diagnosisIds,
         medicines: values.medicines,
@@ -103,16 +143,16 @@ export default function PrescriptionForm({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-
       toast.success(
         editingPrescription?.id
           ? "Cập nhật đơn thuốc thành công!"
           : "Tạo mới đơn thuốc thành công!"
       );
       form.resetFields();
+      handleIncrease();
       if (onSuccess) onSuccess();
     } catch (err) {
-      message.error("Có lỗi khi lưu đơn thuốc");
+      toast.error("Có lỗi khi lưu đơn thuốc");
     }
     setLoading(false);
   };
@@ -153,7 +193,7 @@ export default function PrescriptionForm({
           }
           options={diagnoses.map((d) => ({
             value: d.id,
-            label: `${d.code} - ${d.description}`,
+            label: `${d.code} - ${d.name}`,
           }))}
           style={{ width: "100%" }}
         />
@@ -175,7 +215,13 @@ export default function PrescriptionForm({
                   rules={[{ required: true, message: "Chọn thuốc" }]}
                 >
                   <Select
+                    showSearch
                     placeholder="Thuốc"
+                    filterOption={(input, option) =>
+                      (option?.label ?? "")
+                        .toLowerCase()
+                        .includes(input.toLowerCase())
+                    }
                     options={medicines.map((m) => ({
                       value: m.id,
                       label: m.name,

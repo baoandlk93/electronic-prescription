@@ -1,12 +1,12 @@
 "use client";
 
 import { Button, Modal } from "antd";
-import DataTable from "@/components/DataTable";
+import DataTable from "@/components/ultility/DataTable";
 import { useEffect, useState } from "react";
-import AddMedicineForm from "@/components/AddMedicineForm";
+import AddMedicineForm from "@/components/form/AddMedicineForm";
 import { GiMedicines } from "react-icons/gi";
 import { Medicine } from "@/types/Medicine";
-import DeleteModal from "@/components/DeleteModal";
+import DeleteModal from "@/components/ultility/DeleteModal";
 import { toast } from "react-toastify";
 export default function MedicinePage() {
   const [openMedicineModal, setOpenMedicineModal] = useState(false);
@@ -68,6 +68,7 @@ export default function MedicinePage() {
             title: "Mã",
             dataIndex: "id",
             key: "id",
+            fixed: "left",
           },
           {
             title: "Tên",
@@ -87,28 +88,32 @@ export default function MedicinePage() {
           {
             title: "Hành động",
             key: "action",
+            align: "center",
+            fixed: "right",
             render: (record: Medicine) => (
               <>
-                <Button
-                  className="mr-2"
-                  type="primary"
-                  onClick={() => {
-                    setEditingMedicine(record);
-                    setOpenMedicineModal(true);
-                  }}
-                >
-                  <GiMedicines /> Sửa
-                </Button>
-                <Button
-                  className="ml-2"
-                  type="primary"
-                  danger
-                  onClick={() => {
-                    openDeleteModal(record.id);
-                  }}
-                >
-                  <GiMedicines /> Xóa
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    className="mr-2"
+                    type="primary"
+                    onClick={() => {
+                      setEditingMedicine(record);
+                      setOpenMedicineModal(true);
+                    }}
+                  >
+                    <GiMedicines /> Sửa
+                  </Button>
+                  <Button
+                    className="ml-2"
+                    type="primary"
+                    danger
+                    onClick={() => {
+                      openDeleteModal(record.id);
+                    }}
+                  >
+                    <GiMedicines /> Xóa
+                  </Button>
+                </div>
               </>
             ),
           },

@@ -1,5 +1,7 @@
 import { prisma } from '@/lib/prisma';
-
+export interface Error {
+    message: string;
+}
 export async function GET() {
   try {
     // Lấy ngày hiện tại và ngày cách đây 3 ngày
@@ -18,10 +20,10 @@ export async function GET() {
     });
 
     return Response.json(count);
-  } catch (error: any) {
+  } catch (error: Error | unknown ) {
     return Response.json({ 
       error: 'Lỗi khi lấy số lượng bệnh nhân mới', 
-      details: error?.message 
+      details: error 
     }, { status: 500 });
   }
 }

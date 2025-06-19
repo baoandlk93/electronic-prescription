@@ -1,19 +1,18 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Button, Modal } from "antd";
-import PrescriptionForm from "@/components/PrescriptionForm";
-import DataTable from "@/components/DataTable";
+import PrescriptionForm from "@/components/form/PrescriptionForm";
+import DataTable from "@/components/ultility/DataTable";
 import { PrescriptionDetail } from "@/types/PrescriptionDetail";
 import { Patient } from "@/types/Patient";
 import { GiMedicines } from "react-icons/gi";
-import DeleteModal from "@/components/DeleteModal";
+import DeleteModal from "@/components/ultility/DeleteModal";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
 import PrescriptionDetailModal from "@/components/PrescriptionDetailModal";
 import { PDFViewer } from "@react-pdf/renderer";
 import { MyDocument } from "@/components/PDF/MyDocument";
-import PaperSizeSelect from "@/components/PDF/PaperSizeSelect";
-import { PaperSize } from "@/types/PaperSize";
+import PrescriptionAutoComplete from "@/components/PrescriptionAutoComplete";
 export default function PrescriptionPage() {
   const [openPrescriptionModal, setOpenPrescriptionModal] = useState(false);
   const [editingPrescription, setEditingPrescription] =
@@ -27,7 +26,6 @@ export default function PrescriptionPage() {
     useState<PrescriptionDetail | null>(null);
   const [openViewModal, setOpenViewModal] = useState(false);
   const [openPdfModal, setOpenPdfModal] = useState(false);
-  const [size, setSize] = useState<PaperSize>("A4");
   useEffect(() => {
     fetchPrescriptions();
   }, []);
@@ -63,7 +61,6 @@ export default function PrescriptionPage() {
   const handleView = async (id: string) => {
     const res = await fetch(`/api/prescriptions/${id}`);
     const data = await res.json();
-    console.log(data, "view");
     setViewingPrescription(data);
     setOpenViewModal(true);
   };
@@ -78,27 +75,26 @@ export default function PrescriptionPage() {
     setDeletingId(null);
   };
 
-  const handleViewPdf = async (id: string) => {
-    const res = await fetch(`/api/prescriptions/${id}`);
-    const data = await res.json();
-    console.log(data, "pdf");
-    setViewingPrescription(data);
-    setOpenPdfModal(true);
+  const handleOpenPdfModal = (open: boolean) => {
+    setOpenViewModal(false);
+    setOpenPdfModal(open);
   };
   return (
     <div className="p-16 max-h-screen overflow-hidden mx-auto bg-gray-50 text-gray-900">
       <h1 className="text-2xl font-bold mb-4 text-center">Quản lý đơn thuốc</h1>
-      <div className="my-4">
+      <div className="my-4 flex justify-between">
         <Button
           type="primary"
           size="large"
           className="mr-4"
           onClick={() => {
             setOpenPrescriptionModal(true);
+            setEditingPrescription(null);
           }}
         >
           ➕ Tạo đơn thuốc mới
         </Button>
+        <PrescriptionAutoComplete onSelectPrescription={handleView} />
       </div>
       <DataTable
         columns={[
@@ -139,6 +135,16 @@ export default function PrescriptionPage() {
                     className="mr-1"
                     type="primary"
                     onClick={() => {
+                      handleView(record.id);
+                    }}
+                  >
+                    <GiMedicines />
+                    Chi tiết
+                  </Button>
+                  <Button
+                    className="mr-1"
+                    type="primary"
+                    onClick={() => {
                       handleEdit(record);
                     }}
                   >
@@ -155,26 +161,6 @@ export default function PrescriptionPage() {
                   >
                     <GiMedicines />
                     Xóa
-                  </Button>
-                  <Button
-                    className="mr-1"
-                    type="primary"
-                    onClick={() => {
-                      handleView(record.id);
-                    }}
-                  >
-                    <GiMedicines />
-                    Chi tiết
-                  </Button>
-                  <Button
-                    className="mr-1"
-                    type="primary"
-                    onClick={() => {
-                      handleViewPdf(record.id);
-                    }}
-                  >
-                    <GiMedicines />
-                    PDF
                   </Button>
                 </div>
               </>
@@ -193,6 +179,7 @@ export default function PrescriptionPage() {
         <PrescriptionForm
           onSuccess={() => {
             setOpenPrescriptionModal(false);
+            fetchPrescriptions();
           }}
           onCancel={() => setOpenPrescriptionModal(false)}
           editingPrescription={editingPrescription}
@@ -204,6 +191,7 @@ export default function PrescriptionPage() {
         onDelete={() => handleDeleteConfirm()}
       />
       <PrescriptionDetailModal
+        setOpenPdfModal={handleOpenPdfModal}
         visible={openViewModal}
         onClose={() => setOpenViewModal(false)}
         prescriptionDetails={viewingPrescription}
@@ -211,18 +199,14 @@ export default function PrescriptionPage() {
       <Modal
         title="Xem chi tiết đơn thuốc"
         open={openPdfModal}
-        width={1200}
         onCancel={() => setOpenPdfModal(false)}
         footer={null}
         destroyOnHidden
       >
         <div className="flex justify-between">
           <PDFViewer width={1000} height={800}>
-            <MyDocument prescriptionDetails={viewingPrescription} size={size} />
+            <MyDocument prescriptionDetails={viewingPrescription} size={"A4"} />
           </PDFViewer>
-          <div className="flex w-full">
-            <PaperSizeSelect size={size} setSize={setSize} />
-          </div>
         </div>
       </Modal>
     </div>

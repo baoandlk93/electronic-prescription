@@ -1,12 +1,12 @@
 "use client";
 import { Button } from "antd";
 import { useState, useEffect } from "react";
-import AddPatientForm from "@/components/AddPatientForm";
+import AddPatientForm from "@/components/form/AddPatientForm";
 import { Patient } from "@/types/Patient";
 import Modal from "antd/es/modal/Modal";
 import { FaUser } from "react-icons/fa";
-import DataTable from "@/components/DataTable";
-import DeleteModal from "@/components/DeleteModal";
+import DataTable from "@/components/ultility/DataTable";
+import DeleteModal from "@/components/ultility/DeleteModal";
 import dayjs from "dayjs";
 import { toast } from "react-toastify";
 export default function PatientPage() {
@@ -64,6 +64,7 @@ export default function PatientPage() {
             title: "Mã",
             dataIndex: "id",
             key: "id",
+            fixed: "left",
           },
           {
             title: "Tên",
@@ -97,28 +98,32 @@ export default function PatientPage() {
           {
             title: "Hành động",
             key: "action",
+            align: "center",
+            fixed: "right",
             render: (record: Patient) => (
               <>
-                <Button
-                  className="mr-2"
-                  type="primary"
-                  onClick={() => {
-                    setEditingPatient(record);
-                    setOpenMedicineModal(true);
-                  }}
-                >
-                  <FaUser /> Sửa
-                </Button>
-                <Button
-                  className="ml-2"
-                  type="primary"
-                  danger
-                  onClick={() => {
-                    openDeleteModal(record.id);
-                  }}
-                >
-                  <FaUser /> Xóa
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    className="mr-2"
+                    type="primary"
+                    onClick={() => {
+                      setEditingPatient(record);
+                      setOpenMedicineModal(true);
+                    }}
+                  >
+                    <FaUser /> Sửa
+                  </Button>
+                  <Button
+                    className="ml-2"
+                    type="primary"
+                    danger
+                    onClick={() => {
+                      openDeleteModal(record.id);
+                    }}
+                  >
+                    <FaUser /> Xóa
+                  </Button>
+                </div>
               </>
             ),
           },

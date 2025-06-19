@@ -1,6 +1,7 @@
 import { prisma } from '@/lib/prisma';
 
-export async function GET(req: Request) {
+
+export async function GET() {
   try {
     // Lấy thời gian bắt đầu và kết thúc của ngày hôm nay (theo giờ máy chủ)
     const now = new Date();
@@ -17,10 +18,10 @@ export async function GET(req: Request) {
     });
 
     return Response.json({ count });
-  } catch (error: any) {
+  } catch (error: Error | unknown) {
     return Response.json({
       error: 'Lỗi khi lấy số lượng đơn thuốc trong ngày',
-      details: error.message
+      details: error
     }, { status: 500 });
   }
 }

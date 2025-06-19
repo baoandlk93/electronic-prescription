@@ -1,15 +1,62 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-export async function GET() {
-    const prescriptions = await prisma.prescription.findMany();
+export async function GET(req: Request) {
+    const searchParams = req.url.split("?")[1];
+    console.log(searchParams);
+    const limit = Number(searchParams?.split("limit=")[1].split("&")[0]) || 100;
+    const offset = Number(searchParams?.split("offset=")[1].split("&")[0]) || 0;
+    
+    const prescriptions = (await prisma.prescription.findMany(
+      {
+        take: limit,
+        skip: offset,
+        orderBy: {
+          createdAt: "desc",
+        },
+        include: {
+          patient: true,
+          diagnoses: {
+            include: { diagnosis: true }
+          },
+          items: {
+            include: { medicine: true }
+          }
+        }
+      }
+    ));
     return NextResponse.json(prescriptions);
 }
 
 export async function POST(req: Request) {
     try {
-        const data = await req.json();
-        const prescription = await prisma.prescription.create({ data });
+      // Gỉả sử data truyền lên từ body
+      const { code, patientId, diagnosisIds, medicines, advice, followUpDate } = await req.json();
+
+      const prescription = await prisma.prescription.create({
+        data: {
+          code,
+          patientId,
+          advice,
+          followUpDate,
+          // Tạo prescriptionDiagnosis quaẩn hệ
+          diagnoses: {
+            create: diagnosisIds.map(id => ({ diagnosisId: id }))
+          },
+          items: {
+            create: medicines.map(item => ({
+              medicineId: item.medicineId,
+              quantity: item.quantity,
+              instruction: item.instruction
+            }))
+          }
+        },
+        include: {
+          diagnoses: true,
+          items: true
+        }
+      });
+
         return Response.json(prescription);
     } catch (err) {
         return Response.json({ error: 'Lỗi khi thêm đơn thuốc', details: err }, { status: 500 });

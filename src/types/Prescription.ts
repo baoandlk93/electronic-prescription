@@ -5,7 +5,7 @@ export interface Prescription {
     id: string;
     code: string;
     name: string;
-    date: string;
+    createdAt: string;
     patient: Patient;
     diagnoses: Diagnosis[];
     medicines: Medicine[];

@@ -1,12 +1,18 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Button, Card, List, Statistic, Row, Col, Modal } from "antd";
-import AddPatientForm from "@/components/AddPatientForm";
-import AddMedicineForm from "@/components/AddMedicineForm";
-import PrescriptionForm from "@/components/PrescriptionForm";
+import AddPatientForm from "@/components/form/AddPatientForm";
+import AddMedicineForm from "@/components/form/AddMedicineForm";
+import PrescriptionForm from "@/components/form/PrescriptionForm";
 import { Prescription } from "@/types/Prescription";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { GiMedicines } from "react-icons/gi";
+import { PrescriptionDetail } from "@/types/PrescriptionDetail";
+import PrescriptionDetailModal from "./PrescriptionDetailModal";
+import PrescriptionAutoComplete from "./PrescriptionAutoComplete";
+import { PDFViewer } from "@react-pdf/renderer";
+import { MyDocument } from "./PDF/MyDocument";
 
 export default function HomePage() {
   const [openPatientModal, setOpenPatientModal] = useState(false);
@@ -18,7 +24,10 @@ export default function HomePage() {
   const [countPrescriptionToday, setCountPrescriptionToday] = useState(0);
   const [countPatientToday, setCountPatientToday] = useState(0);
   const [countMedicine, setCountMedicine] = useState(0);
-
+  const [viewingPrescription, setViewingPrescription] =
+    useState<PrescriptionDetail | null>(null);
+  const [openViewModal, setOpenViewModal] = useState(false);
+  const [openPdfModal, setOpenPdfModal] = useState(false);
   useEffect(() => {
     fetchRecentPrescriptions();
     fetchCountPrescriptionToday();
@@ -27,7 +36,7 @@ export default function HomePage() {
   }, []);
 
   const fetchRecentPrescriptions = async () => {
-    const response = await fetch("/api/prescriptions?limit=5");
+    const response = await fetch("/api/prescriptions?limit=10&offset=0");
     const data = await response.json();
     setRecentPrescriptions(data);
   };
@@ -41,7 +50,6 @@ export default function HomePage() {
   const fetchCountPatientToday = async () => {
     const response = await fetch("/api/patients/count-today");
     const data = await response.json();
-    console.log(data);
     setCountPatientToday(data.count);
   };
 
@@ -49,6 +57,18 @@ export default function HomePage() {
     const response = await fetch("/api/medicines/count");
     const data = await response.json();
     setCountMedicine(data.count);
+  };
+
+  const handleView = async (id: string) => {
+    const res = await fetch(`/api/prescriptions/${id}`);
+    const data = await res.json();
+    setViewingPrescription(data);
+    setOpenViewModal(true);
+  };
+
+  const handleOpenPdfModal = (open: boolean) => {
+    setOpenViewModal(false);
+    setOpenPdfModal(open);
   };
 
   return (
@@ -97,6 +117,9 @@ export default function HomePage() {
           <Statistic title="Số loại thuốc" value={countMedicine} />
         </Col>
       </Row>
+      <div className="my-4 flex justify-center">
+        <PrescriptionAutoComplete onSelectPrescription={handleView} />
+      </div>
       <div className="overflow-auto">
         <Card
           title="Đơn thuốc gần đây"
@@ -106,11 +129,24 @@ export default function HomePage() {
             dataSource={recentPrescriptions || []}
             renderItem={(item: Prescription) => (
               <List.Item
-                actions={[<Link href={`/prescription/${item.id}`}>Xem</Link>]}
+                actions={[
+                  <>
+                    <Button
+                      className="mr-1"
+                      type="primary"
+                      onClick={() => {
+                        handleView(item.id);
+                      }}
+                    >
+                      <GiMedicines />
+                      Chi tiết
+                    </Button>
+                  </>,
+                ]}
               >
                 <List.Item.Meta
                   title={`${item.code} - ${item?.patient?.name}`}
-                  description={`Ngày: ${dayjs(item?.date).format(
+                  description={`Ngày: ${dayjs(item?.createdAt).format(
                     "DD/MM/YYYY HH:mm:ss"
                   )}`}
                 />
@@ -164,6 +200,23 @@ export default function HomePage() {
           }}
           onCancel={() => setOpenPrescriptionModal(false)}
         />
+      </Modal>
+      <PrescriptionDetailModal
+        setOpenPdfModal={handleOpenPdfModal}
+        visible={openViewModal}
+        onClose={() => setOpenViewModal(false)}
+        prescriptionDetails={viewingPrescription}
+      />
+      <Modal
+        title="Xem PDF"
+        open={openPdfModal}
+        onCancel={() => setOpenPdfModal(false)}
+        footer={null}
+        destroyOnHidden
+      >
+        <PDFViewer style={{ width: "100%", height: "600px" }}>
+          <MyDocument prescriptionDetails={viewingPrescription} size="A4" />
+        </PDFViewer>
       </Modal>
     </div>
   );
