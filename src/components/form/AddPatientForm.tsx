@@ -34,16 +34,15 @@ export default function AddPatientForm({
       return;
     }
     const data = {
-      id: editingPatient?.id,
+      ...(editingPatient?.id ? { id: editingPatient.id } : {}),
       name: values.fullName,
       dateOfBirth: values.dob ? values.dob.toISOString() : undefined,
       gender: values.gender,
       address: values.address,
       phone: values.phone,
     };
-    console.log("DATA SUBMIT:", data);
     await fetch("/api/patients", {
-      method: "PUT",
+      method: editingPatient ? "PUT" : "POST",
       headers: {
         "Content-Type": "application/json",
       },

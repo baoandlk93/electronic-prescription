@@ -41,10 +41,10 @@ export async function POST(req: Request) {
           followUpDate,
           // Tạo prescriptionDiagnosis quaẩn hệ
           diagnoses: {
-            create: diagnosisIds.map(id => ({ diagnosisId: id }))
+            create: diagnosisIds.map((id: number) => ({ diagnosisId: id }))
           },
           items: {
-            create: medicines.map(item => ({
+            create: medicines.map((item: any) => ({
               medicineId: item.medicineId,
               quantity: item.quantity,
               instruction: item.instruction

@@ -45,7 +45,7 @@ export default function PatientPage() {
       });
   };
   return (
-    <div className="flex flex-col min-h-screen overflow-auto bg-gray-50 p-16 text-gray-900">
+    <div className="flex flex-col w-[calc(100vw-200px)] max-h-screen overflow-hidden bg-gray-50 text-gray-900 p-16">
       <h1 className="text-2xl font-bold mb-4 text-center">Quản lý bệnh nhân</h1>
       <div className="flex justify-start mb-4">
         <Button

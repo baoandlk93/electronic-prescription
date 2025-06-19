@@ -1,12 +1,16 @@
 import { AutoComplete, Input } from "antd";
 import { useState } from "react";
 import dayjs from "dayjs";
-
+import { FaDeleteLeft } from "react-icons/fa6";
 // props: hàm onSelectPrescription lấy id đơn thuốc khi chọn
-export default function PrescriptionAutoComplete({ onSelectPrescription }) {
+export default function PrescriptionAutoComplete({
+  onSelectPrescription,
+}: {
+  onSelectPrescription: (id: string) => void;
+}) {
   const [options, setOptions] = useState([]);
 
-  const handleSearch = async (value) => {
+  const handleSearch = async (value: string) => {
     if (!value || value.length < 2) {
       setOptions([]);
       return;
@@ -19,7 +23,7 @@ export default function PrescriptionAutoComplete({ onSelectPrescription }) {
     if (res.ok) {
       const data = await res.json();
       setOptions(
-        (data || []).map((p) => ({
+        (data || []).map((p: any) => ({
           value: p.id, // Giá trị thực tế là id đơn thuốc
           label: (
             <div>
@@ -41,8 +45,8 @@ export default function PrescriptionAutoComplete({ onSelectPrescription }) {
       onSearch={handleSearch}
       placeholder="Tìm đơn thuốc theo tên bệnh nhân, mã hoặc ngày"
       filterOption={false}
-      onSelect={(id) => onSelectPrescription(id)}
-      allowClear
+      onSelect={(id: string) => onSelectPrescription(id)}
+      allowClear={{ clearIcon: <FaDeleteLeft /> }}
     >
       <Input />
     </AutoComplete>

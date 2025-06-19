@@ -67,7 +67,7 @@ export default function DiagnosisPage() {
     });
   };
   return (
-    <div className="flex flex-col max-h-screen overflow-hidden bg-gray-50 text-gray-900 p-16">
+    <div className="flex flex-col w-full max-h-screen overflow-hidden bg-gray-50 text-gray-900 p-16">
       <h1 className="text-2xl font-bold mb-4 text-center">Quản lý bệnh</h1>
       <div className="flex gap-4 justify-start mb-4">
         <Button

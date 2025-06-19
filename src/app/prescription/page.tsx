@@ -83,6 +83,7 @@ export default function PrescriptionPage() {
     <div className="p-16 max-h-screen overflow-hidden mx-auto bg-gray-50 text-gray-900">
       <h1 className="text-2xl font-bold mb-4 text-center">Quản lý đơn thuốc</h1>
       <div className="my-4 flex justify-between">
+        <PrescriptionAutoComplete onSelectPrescription={handleView} />
         <Button
           type="primary"
           size="large"
@@ -94,7 +95,6 @@ export default function PrescriptionPage() {
         >
           ➕ Tạo đơn thuốc mới
         </Button>
-        <PrescriptionAutoComplete onSelectPrescription={handleView} />
       </div>
       <DataTable
         columns={[
