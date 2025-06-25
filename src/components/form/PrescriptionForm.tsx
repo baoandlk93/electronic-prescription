@@ -25,6 +25,7 @@ function normalizeInitialValues(pres?: PrescriptionDetail | null) {
     diagnosisIds: pres.diagnoses
       ? pres.diagnoses.map((d: any) => d.diagnosisId || d.id)
       : [],
+    symptom: pres.symptom ?? "",
     medicines: pres.items
       ? pres.items.map((item: any) => ({
           medicineId: item.medicineId || item.id,
@@ -77,6 +78,7 @@ export default function PrescriptionForm({
         patientId: undefined,
         code: "",
         diagnosisIds: [],
+        symptom: "",
         medicines: [],
         advice: "",
         followUpDate: null,
@@ -132,6 +134,7 @@ export default function PrescriptionForm({
             }),
         patientId: values.patientId,
         diagnosisIds: values.diagnosisIds,
+        symptom: values.symptom,
         medicines: values.medicines,
         advice: values.advice,
         followUpDate: values.followUpDate
@@ -197,6 +200,15 @@ export default function PrescriptionForm({
           }))}
           style={{ width: "100%" }}
         />
+      </Form.Item>
+
+      {/* 2. triệu chứng */}
+      <Form.Item
+        label="Triệu chứng"
+        name="symptom"
+        rules={[{ required: true, message: "Vui lòng nhập triệu chứng." }]}
+      >
+        <Input.TextArea rows={2} placeholder="Nhập triệu chứng" />
       </Form.Item>
 
       {/* 3. Danh sách thuốc */}

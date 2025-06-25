@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { Form, Input, Button } from "antd";
 import { toast } from "react-toastify";
-import { Medicine } from "../types/Medicine";
+import { Medicine } from "@/types/Medicine";
 
 export default function AddMedicineForm({
   onSuccess,

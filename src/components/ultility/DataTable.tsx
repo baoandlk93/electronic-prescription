@@ -34,7 +34,7 @@ export default function DataTable({
         columns={columns}
         dataSource={dataSource}
         className={styles.customTable}
-        scroll={{ x: "max-content", y: 55 * 10 }} // x: nên set số, ví dụ 1200 hoặc "max-content"
+        scroll={{ x: "1200", y: 55 * 10 }} // x: nên set số, ví dụ 1200 hoặc "max-content"
         sticky
       />
     </div>

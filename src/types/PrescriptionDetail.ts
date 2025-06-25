@@ -8,6 +8,7 @@ export interface PrescriptionDetail {
     createdAt: Date;
     diagnoses: Diagnosis[];
     followUpDate: Date;
+    symptom: string;
     id: string;
     items: PrescriptionMedicine[];
     patientId: string;

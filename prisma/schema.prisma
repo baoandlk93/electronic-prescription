@@ -35,6 +35,7 @@ model Prescription {
   diagnoses  PrescriptionDiagnosis[]
   createdAt  DateTime             @default(now())
   advice     String?
+  symptom    String?
   items      PrescriptionMedicine[]
   followUpDate DateTime?
   

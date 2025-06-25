@@ -63,6 +63,9 @@ const PrescriptionDetailModal = ({
           )}
         </Descriptions.Item>
         <Descriptions.Item label="Chẩn đoán">{diagnoses}</Descriptions.Item>
+        <Descriptions.Item label="Triệu chứng">
+          {prescriptionDetails?.symptom}
+        </Descriptions.Item>
         <Descriptions.Item label="Ngày tạo">
           {dayjs(prescriptionDetails?.createdAt).format("DD/MM/YYYY")}
         </Descriptions.Item>

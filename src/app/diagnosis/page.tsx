@@ -87,6 +87,7 @@ export default function DiagnosisPage() {
             title: "STT",
             dataIndex: "id",
             key: "id",
+            fixed: "left",
           },
           {
             title: "Tên",
@@ -106,6 +107,8 @@ export default function DiagnosisPage() {
           {
             title: "Hành động",
             key: "action",
+            align: "center",
+            fixed: "right",
             render: (record: DiagnosisDetail) => (
               <>
                 <Button

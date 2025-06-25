@@ -31,15 +31,16 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
     try {
       // Gỉả sử data truyền lên từ body
-      const { code, patientId, diagnosisIds, medicines, advice, followUpDate } = await req.json();
+      const { code, patientId, diagnosisIds, medicines, advice, followUpDate, symptom } = await req.json();
 
       const prescription = await prisma.prescription.create({
         data: {
           code,
           patientId,
           advice,
+          symptom,
           followUpDate,
-          // Tạo prescriptionDiagnosis quaẩn hệ
+          // Tạo prescriptionDiagnosis quan hệ
           diagnoses: {
             create: diagnosisIds.map((id: number) => ({ diagnosisId: id }))
           },
@@ -66,7 +67,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
     try {
       const data = await req.json();
-      const { id, diagnosisIds, medicines, patientId, ...rest } = data;
+      const { id, diagnosisIds, medicines, patientId, symptom, ...rest } = data;
   
       if (!id) {
         return Response.json({ error: 'Thiếu id đơn thuốc' }, { status: 400 });
@@ -76,6 +77,9 @@ export async function PUT(req: Request) {
       const updateData: any = { ...rest };
       if (patientId) {
         updateData.patient = { connect: { id: Number(patientId) } };
+      }
+      if (symptom) {
+        updateData.symptom = symptom;
       }
       await prisma.prescription.update({
         where: { id: Number(id) },

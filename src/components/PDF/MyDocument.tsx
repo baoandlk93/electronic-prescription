@@ -195,7 +195,14 @@ export const MyDocument = ({
             {prescriptionDetails?.patient?.phone}
           </Text>
         </View>
-        {/* Dòng 4: Chẩn đoán */}
+        {/* Dòng 4: Triệu chứng */}
+        <View style={styles.row}>
+          <Text style={{ width: "100%" }}>
+            <Text style={styles.bold}>Triệu chứng:</Text>{" "}
+            {prescriptionDetails?.symptom}
+          </Text>
+        </View>
+        {/* Dòng 5: Chẩn đoán */}
         <View style={styles.row}>
           <Text style={{ width: "100%" }}>
             <Text style={styles.bold}>Chẩn đoán:</Text>{" "}
