@@ -30,11 +30,6 @@ export default function Sidebar() {
         Icon={AiOutlineUser}
         label="Quản lý bệnh nhân"
       />
-      <SidebarLink
-        href="/statistics"
-        Icon={AiOutlineBarChart}
-        label="Thống kê"
-      />
     </nav>
   );
 }

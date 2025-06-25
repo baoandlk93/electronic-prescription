@@ -18,7 +18,7 @@ export default function AddPatientForm({
         id: editingPatient.id,
         fullName: editingPatient.name, // mapping từ name sang fullName
         dob: editingPatient.dateOfBirth
-          ? dayjs(editingPatient.dateOfBirth)
+          ? dayjs(editingPatient.dateOfBirth, "YYYY")
           : null, // mapping date
         gender: editingPatient.gender,
         phone: editingPatient.phone,
@@ -36,7 +36,7 @@ export default function AddPatientForm({
     const data = {
       ...(editingPatient?.id ? { id: editingPatient.id } : {}),
       name: values.fullName,
-      dateOfBirth: values.dob ? values.dob.toISOString() : undefined,
+      dateOfBirth: values.dob ? values.dob.format("YYYY") : undefined,
       gender: values.gender,
       address: values.address,
       phone: values.phone,
@@ -70,11 +70,11 @@ export default function AddPatientForm({
         <Input />
       </Form.Item>
       <Form.Item
-        label="Ngày sinh"
+        label="Năm sinh"
         name="dob"
-        rules={[{ required: true, message: "Nhập ngày sinh!" }]}
+        rules={[{ required: true, message: "Nhập năm sinh!" }]}
       >
-        <DatePicker format="DD/MM/YYYY" style={{ width: "100%" }} />
+        <DatePicker picker="year" format="YYYY" style={{ width: "100%" }} />
       </Form.Item>
       <Form.Item
         label="Giới tính"

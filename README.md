@@ -1,37 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ỨNG DỤNG QUẢN LÝ PHÒNG KHÁM
 
-## Getting Started
+## Mô tả
 
-First, run the development server:
+Đây là ứng dụng giúp phòng khám quản lý bệnh nhân, đơn thuốc, lịch khám, nhân viên và báo cáo. Ứng dụng có giao diện web thân thiện, dễ sử dụng dành cho nhân viên phòng khám.
+
+---
+
+## Tính năng chính
+
+- Quản lý thông tin bệnh nhân
+- Quản lý lịch khám và đặt lịch
+- Quản lý đơn thuốc, toa thuốc
+- Quản lý nhân viên, bác sĩ
+- Báo cáo, thống kê doanh thu, lượt khám
+- Tích hợp xuất file PDF/Excel các mẫu biểu
+
+---
+
+## Yêu cầu hệ thống
+
+- **Hệ điều hành:** Windows / Linux / Mac OS
+- **Node.js:** >= 18.x
+- **MySQL:** >= 5.7 hoặc 8.x
+- **Trình duyệt:** Chrome, Firefox, Edge
+- **Công cụ khác:** git
+
+---
+
+## Hướng dẫn cài đặt
+
+### 1. Tải mã nguồn
+
+Tải mã nguồn ứng dụng về máy từ Github hoặc nhận file nén và giải nén:
+
+### 2. Cài đặt môi trường
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npx prisma generate     // lệnh khởi tạo prisma client
+npx prisma migrate dev  // lệnh khởi tạo database
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Để tạo/mở Prisma Studio (dashboard quản lý), chạy:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npx prisma studio
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Cấu hình kết nối cơ sở dữ liệu
 
-## Learn More
+```bash
+// Cấu hình kết nối cơ sở dữ liệu trong file .env
+DATABASE_URL="mysql://your-username:your-password@localhost:3306/electronic_prescription"
+```
 
-To learn more about Next.js, take a look at the following resources:
+Đảm bảo MySQL đã chạy và bạn nhập đúng tài khoản, mật khẩu.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 4. Build ứng dụng
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run build
+```
 
-## Deploy on Vercel
+Sau khi build xong, chạy lệnh:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run start
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-# electronic-prescription
+Mở trình duyệt và truy cập vào địa chỉ: http://localhost:3000
+
+### 5. Hỗ trợ
+
+Nếu cần hỗ trợ, liên hệ:
+
+📧 Email: baoan.dev@gmail.com
+
+📞 Điện thoại: 0935 76 2014

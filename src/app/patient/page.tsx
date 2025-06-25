@@ -72,11 +72,11 @@ export default function PatientPage() {
             key: "name",
           },
           {
-            title: "Ngày sinh",
+            title: "Năm sinh",
             dataIndex: "dateOfBirth",
             key: "dateOfBirth",
             render: (value: string) =>
-              value ? dayjs(value).format("DD/MM/YYYY") : "",
+              value ? dayjs(value).format("YYYY") : "",
           },
           {
             title: "Giới tính",

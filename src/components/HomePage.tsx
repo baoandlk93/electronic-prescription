@@ -215,7 +215,7 @@ export default function HomePage() {
         destroyOnHidden
       >
         <PDFViewer style={{ width: "100%", height: "600px" }}>
-          <MyDocument prescriptionDetails={viewingPrescription} size="A4" />
+          <MyDocument prescriptionDetails={viewingPrescription} size="A5" />
         </PDFViewer>
       </Modal>
     </div>

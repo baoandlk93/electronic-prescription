@@ -106,7 +106,6 @@ const styles = StyleSheet.create({
     zIndex: 0,
   },
 });
-import { calculateAge } from "@/lib/ultility";
 // Main component
 export const MyDocument = ({
   prescriptionDetails,
@@ -122,21 +121,16 @@ export const MyDocument = ({
 
       {/* Header phòng khám */}
       <View style={styles.headerClinic}>
-        <View style={{ width: 56, marginRight: 12 }}>
-          {/* Chèn logo nếu muốn */}
-          {/* <Image src="/logo.png" style={{ width: 48, height: 48 }} /> */}
-        </View>
         <View style={{ flex: 1 }}>
-          <Text style={styles.clinicName}>Phòng Khám Bác sỹ Tâm</Text>
+          <Text style={styles.clinicName}>
+            Phòng Khám Bác sỹ Huỳnh Minh Tâm
+          </Text>
           <Text>
-            Địa chỉ: 207 Hoàng Văn Thụ, Phương Sài, Nha Trang, Khánh Hòa 650000,
-            Việt Nam
+            Địa chỉ: 207A Hoàng Văn Thụ, Phương Sài, Nha Trang, Khánh Hòa, Việt
+            Nam
           </Text>
           <Text>ĐT: 0983314039</Text>
-          <Text style={styles.clinicSub}>(Phòng khám chuyên bệnh phổi)</Text>
-        </View>
-        <View style={{ alignItems: "flex-end" }}>
-          <Text>{dayjs().format("DD/MM/YYYY")}</Text>
+          <Text style={styles.clinicSub}>(Phòng khám chuyên khoa nội)</Text>
         </View>
       </View>
 
@@ -149,66 +143,55 @@ export const MyDocument = ({
       <View style={styles.box}>
         {/* Dòng 1: Mã BN, ngày, mã đơn */}
         <View style={styles.row}>
-          <Text style={{ width: "25%" }}>
-            <Text style={styles.bold}>Mã BN:</Text>{" "}
-            {prescriptionDetails?.patient?.code}
+          <Text style={{ width: "50%" }}>
+            <Text style={styles.bold}>Mã đơn:</Text> {prescriptionDetails?.code}
           </Text>
-          <Text style={{ width: "35%" }}>
+          <Text style={{ width: "50%" }}>
             <Text style={styles.bold}>Ngày:</Text>{" "}
             {prescriptionDetails?.createdAt &&
               dayjs(prescriptionDetails.createdAt).format("DD/MM/YYYY HH:mm")}
           </Text>
-          <Text style={{ width: "40%" }}>
-            <Text style={styles.bold}>Mã đơn:</Text> {prescriptionDetails?.code}
-          </Text>
         </View>
         {/* Dòng 2: Họ tên, SN/tuổi/GT */}
         <View style={styles.row}>
-          <Text style={{ width: "29%" }}>
+          <Text style={{ width: "50%" }}>
             <Text style={styles.bold}>Họ tên:</Text>{" "}
-            <Text style={styles.bold}>
-              {prescriptionDetails?.patient?.name}
+            <Text>{prescriptionDetails?.patient?.name}</Text>
+          </Text>
+          <Text style={{ width: "25%" }}>
+            <Text style={styles.bold}>Năm sinh:</Text>{" "}
+            <Text>
+              {prescriptionDetails?.patient?.dateOfBirth &&
+                dayjs(prescriptionDetails?.patient?.dateOfBirth).format("YYYY")}
             </Text>
           </Text>
-          <Text style={{ width: "29%" }}>
-            <Text style={styles.bold}>SN:</Text>{" "}
-            {prescriptionDetails?.patient?.dateOfBirth &&
-              dayjs(prescriptionDetails?.patient?.dateOfBirth).format(
-                "DD/MM/YYYY"
-              )}
-            {"  "} -{" "}
-            {calculateAge(prescriptionDetails?.patient?.dateOfBirth) && "Tuổi "}
-          </Text>
-          <Text style={{ width: "14%" }}>
-            <Text style={styles.bold}>GT:</Text>{" "}
-            {prescriptionDetails?.patient?.gender}
+          <Text style={{ width: "25%" }}>
+            <Text style={styles.bold}> Giới tính:</Text>{" "}
+            {prescriptionDetails?.patient?.gender === "male"
+              ? "Nam"
+              : prescriptionDetails?.patient?.gender === "female"
+              ? "Nữ"
+              : "Khác"}
           </Text>
         </View>
         {/* Dòng 3: Địa chỉ, ĐT */}
         <View style={styles.row}>
-          <Text style={{ width: "60%" }}>
+          <Text style={{ width: "50%" }}>
             <Text style={styles.bold}>Địa chỉ:</Text>{" "}
             {prescriptionDetails?.patient?.address}
           </Text>
-          <Text>
+          <Text style={{ width: "50%" }}>
             <Text style={styles.bold}>ĐT:</Text>{" "}
             {prescriptionDetails?.patient?.phone}
           </Text>
         </View>
-        {/* Dòng 4: Triệu chứng */}
-        <View style={styles.row}>
-          <Text style={{ width: "100%" }}>
-            <Text style={styles.bold}>Triệu chứng:</Text>{" "}
-            {prescriptionDetails?.symptom}
-          </Text>
-        </View>
-        {/* Dòng 5: Chẩn đoán */}
+        {/* Dòng 4: Chẩn đoán */}
         <View style={styles.row}>
           <Text style={{ width: "100%" }}>
             <Text style={styles.bold}>Chẩn đoán:</Text>{" "}
             {prescriptionDetails?.diagnoses
               ?.map((d) => d.diagnosis.name)
-              .join(", ")}
+              .join("\n")}
           </Text>
         </View>
       </View>

@@ -10,7 +10,7 @@ datasource db {
 model Patient {
   id           Int      @id @default(autoincrement())
   name         String
-  dateOfBirth  DateTime
+  dateOfBirth  String
   gender       String
   address      String
   phone        String?

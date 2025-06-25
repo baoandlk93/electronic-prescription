@@ -130,7 +130,7 @@ export default function PrescriptionForm({
         ...(editingPrescription?.code
           ? { code: editingPrescription.code }
           : {
-              code: `ĐT${dayjs().format("DDMMYYYY")}${count}`,
+              code: `HMT${dayjs().format("DDMMYYYY")}${count}`,
             }),
         patientId: values.patientId,
         diagnosisIds: values.diagnosisIds,
@@ -202,16 +202,7 @@ export default function PrescriptionForm({
         />
       </Form.Item>
 
-      {/* 2. triệu chứng */}
-      <Form.Item
-        label="Triệu chứng"
-        name="symptom"
-        rules={[{ required: true, message: "Vui lòng nhập triệu chứng." }]}
-      >
-        <Input.TextArea rows={2} placeholder="Nhập triệu chứng" />
-      </Form.Item>
-
-      {/* 3. Danh sách thuốc */}
+      {/* 2. Danh sách thuốc */}
       <Form.List name="medicines">
         {(fields, { add, remove }) => (
           <>
@@ -269,7 +260,7 @@ export default function PrescriptionForm({
         )}
       </Form.List>
 
-      {/* 4. Ghi chú và ngày tái khám */}
+      {/* 3. Ghi chú và ngày tái khám */}
       <Form.Item label="Lời dặn bác sĩ" name="advice">
         <Input.TextArea
           rows={2}

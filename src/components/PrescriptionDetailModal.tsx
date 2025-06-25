@@ -47,27 +47,29 @@ const PrescriptionDetailModal = ({
         </Descriptions.Item>
         <Descriptions.Item label="Bệnh nhân">
           {prescriptionDetails?.patient?.name}
-          {dayjs(prescriptionDetails?.patient?.dateOfBirth).format(
-            "DD/MM/YYYY"
-          ) && (
+          {dayjs(prescriptionDetails?.patient?.dateOfBirth).format("YYYY") && (
             <>
               {" "}
               -{" "}
-              {dayjs(prescriptionDetails?.patient?.dateOfBirth).format(
-                "DD/MM/YYYY"
-              )}
+              {dayjs(prescriptionDetails?.patient?.dateOfBirth).format("YYYY")}
             </>
           )}
           {prescriptionDetails?.patient?.gender && (
-            <> ({prescriptionDetails?.patient.gender})</>
+            <>
+              {" "}
+              (
+              {prescriptionDetails?.patient.gender === "male"
+                ? "Nam"
+                : prescriptionDetails?.patient.gender === "female"
+                ? "Nữ"
+                : "Khác"}
+              )
+            </>
           )}
         </Descriptions.Item>
         <Descriptions.Item label="Chẩn đoán">{diagnoses}</Descriptions.Item>
-        <Descriptions.Item label="Triệu chứng">
-          {prescriptionDetails?.symptom}
-        </Descriptions.Item>
-        <Descriptions.Item label="Ngày tạo">
-          {dayjs(prescriptionDetails?.createdAt).format("DD/MM/YYYY")}
+        <Descriptions.Item label="Ngày giờ tạo">
+          {dayjs(prescriptionDetails?.createdAt).format("HH:mm - DD/MM/YYYY")}
         </Descriptions.Item>
         <Descriptions.Item label="Lời dặn">
           {prescriptionDetails?.advice}

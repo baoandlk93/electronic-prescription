@@ -38,7 +38,6 @@ export async function POST(req: Request) {
           code,
           patientId,
           advice,
-          symptom,
           followUpDate,
           // Tạo prescriptionDiagnosis quan hệ
           diagnoses: {
@@ -67,7 +66,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
     try {
       const data = await req.json();
-      const { id, diagnosisIds, medicines, patientId, symptom, ...rest } = data;
+      const { id, diagnosisIds, medicines, patientId, ...rest } = data;
   
       if (!id) {
         return Response.json({ error: 'Thiếu id đơn thuốc' }, { status: 400 });
@@ -77,9 +76,6 @@ export async function PUT(req: Request) {
       const updateData: any = { ...rest };
       if (patientId) {
         updateData.patient = { connect: { id: Number(patientId) } };
-      }
-      if (symptom) {
-        updateData.symptom = symptom;
       }
       await prisma.prescription.update({
         where: { id: Number(id) },
