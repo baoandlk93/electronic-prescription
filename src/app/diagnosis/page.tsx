@@ -87,6 +87,7 @@ export default function DiagnosisPage() {
             title: "STT",
             dataIndex: "id",
             key: "id",
+            align: "center",
             fixed: "left",
           },
           {
@@ -97,6 +98,7 @@ export default function DiagnosisPage() {
           {
             title: "Mã",
             dataIndex: "code",
+            align: "center",
             key: "code",
           },
           {
@@ -111,26 +113,28 @@ export default function DiagnosisPage() {
             fixed: "right",
             render: (record: DiagnosisDetail) => (
               <>
-                <Button
-                  className="mr-2"
-                  type="primary"
-                  onClick={() => {
-                    setEditingDiagnosis(record);
-                    setOpenDiagnosisModal(true);
-                  }}
-                >
-                  <GiMedicines /> Sửa
-                </Button>
-                <Button
-                  className="ml-2"
-                  type="primary"
-                  danger
-                  onClick={() => {
-                    openDeleteModal(record.id);
-                  }}
-                >
-                  <GiMedicines /> Xóa
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    className="mr-2"
+                    type="primary"
+                    onClick={() => {
+                      setEditingDiagnosis(record);
+                      setOpenDiagnosisModal(true);
+                    }}
+                  >
+                    <GiMedicines /> Sửa
+                  </Button>
+                  <Button
+                    className="ml-2"
+                    type="primary"
+                    danger
+                    onClick={() => {
+                      openDeleteModal(record.id);
+                    }}
+                  >
+                    <GiMedicines /> Xóa
+                  </Button>
+                </div>
               </>
             ),
           },
