@@ -79,7 +79,7 @@ export default function DiagnosisPage() {
         >
           <GiMedicines /> Thêm bệnh
         </Button>
-        <DiseaseImport onImport={handleImportDiseases} />
+        {/* <DiseaseImport onImport={handleImportDiseases} /> */}
       </div>
       <DataTable
         columns={[

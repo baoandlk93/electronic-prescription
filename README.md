@@ -4,8 +4,6 @@
 
 Đây là ứng dụng giúp phòng khám quản lý bệnh nhân, đơn thuốc, lịch khám, nhân viên và báo cáo. Ứng dụng có giao diện web thân thiện, dễ sử dụng dành cho nhân viên phòng khám.
 
----
-
 ## Tính năng chính
 
 - Quản lý thông tin bệnh nhân
@@ -15,7 +13,11 @@
 - Báo cáo, thống kê doanh thu, lượt khám
 - Tích hợp xuất file PDF/Excel các mẫu biểu
 
----
+### Tech Stack
+- Framework: Next.js
+- Database: MySQL
+- ORM: Prisma
+- UI Library: Antd
 
 ## Yêu cầu hệ thống
 

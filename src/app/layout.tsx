@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Sidebar from "@/components/ultility/Sidebar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -32,9 +31,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <ToastContainer />
-        <div className="flex w-full h-screen overflow-hidden bg-gray-50 text-gray-900">
-          <Sidebar />
-          <div className="flex-1">{children}</div>
+        <div className="flex w-full h-screen overflow-hidden justify-center items-center bg-gray-50 text-gray-900">
+          {children}
         </div>
       </body>
     </html>
