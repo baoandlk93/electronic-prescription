@@ -8,6 +8,7 @@ import { GiMedicines } from "react-icons/gi";
 import { Medicine } from "@/types/Medicine";
 import DeleteModal from "@/components/ultility/DeleteModal";
 import { toast } from "react-toastify";
+import MedicineImport from "@/components/xlsx/MedicineImport";
 export default function MedicinePage() {
   const [openMedicineModal, setOpenMedicineModal] = useState(false);
   const [medicines, setMedicines] = useState<Medicine[]>([]);
@@ -44,6 +45,15 @@ export default function MedicinePage() {
       });
   };
 
+  const handleImportMedicines = (medicines: any[]) => {
+    medicines.forEach((medicine) => {
+      fetch("/api/medicines", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(medicine),
+      });
+    });
+  };
   useEffect(() => {
     fetchMedicines();
   }, []);
@@ -51,7 +61,7 @@ export default function MedicinePage() {
   return (
     <div className="flex flex-col w-full max-h-screen overflow-hidden bg-gray-50 text-gray-900 px-16 py-8">
       <h1 className="text-2xl font-bold mb-4 text-center">Quản lý thuốc</h1>
-      <div className="flex justify-start mb-4">
+      <div className="flex justify-start mb-4 gap-4">
         <Button
           type="primary"
           onClick={() => {
@@ -61,6 +71,7 @@ export default function MedicinePage() {
         >
           <GiMedicines /> Thêm thuốc
         </Button>
+        <MedicineImport onImport={handleImportMedicines} />
       </div>
       <DataTable
         columns={[
@@ -76,7 +87,7 @@ export default function MedicinePage() {
             key: "name",
           },
           {
-            title: "Hàm lượng",
+            title: "Hoạt chất/Hàm lượng",
             dataIndex: "content",
             key: "content",
           },

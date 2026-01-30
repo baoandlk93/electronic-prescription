@@ -175,6 +175,7 @@ export default function PrescriptionPage() {
         onCancel={() => setOpenPrescriptionModal(false)}
         footer={null}
         destroyOnHidden
+        width={1000}
       >
         <PrescriptionForm
           onSuccess={() => {

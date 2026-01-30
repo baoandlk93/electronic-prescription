@@ -191,6 +191,7 @@ export default function HomePage() {
         onCancel={() => setOpenPrescriptionModal(false)}
         footer={null}
         destroyOnHidden
+        width={1000}
       >
         <PrescriptionForm
           editingPrescription={null}
@@ -212,10 +213,12 @@ export default function HomePage() {
         open={openPdfModal}
         onCancel={() => setOpenPdfModal(false)}
         footer={null}
+        width={"full"}
+        style={{ top: 20 }}
         destroyOnHidden
       >
-        <PDFViewer style={{ width: "100%", height: "600px" }}>
-          <MyDocument prescriptionDetails={viewingPrescription} size="A5" />
+        <PDFViewer style={{ width: "100%", height: "768px" }}>
+          <MyDocument prescriptionDetails={viewingPrescription} size="A4" />
         </PDFViewer>
       </Modal>
     </div>

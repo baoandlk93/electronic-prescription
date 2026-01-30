@@ -123,14 +123,15 @@ export const MyDocument = ({
       <View style={styles.headerClinic}>
         <View style={{ flex: 1 }}>
           <Text style={styles.clinicName}>
-            Phòng Khám Bác sỹ Huỳnh Minh Tâm
+            PHÒNG KHÁM CK NỘI BS TÂM
+          </Text>
+          <Text style={styles.clinicName}>
+            CHUYÊN NGÀNH : PHỔI VÀ LAO
           </Text>
           <Text>
-            Địa chỉ: 207A Hoàng Văn Thụ, Phương Sài, Nha Trang, Khánh Hòa, Việt
-            Nam
+            Địa chỉ: 207A Hoàng Văn Thụ,Tây Nha Trang, Khánh Hòa
           </Text>
           <Text>ĐT: 0983314039</Text>
-          <Text style={styles.clinicSub}>(Phòng khám chuyên khoa nội)</Text>
         </View>
       </View>
 
@@ -141,7 +142,7 @@ export const MyDocument = ({
 
       {/* Khung thông tin */}
       <View style={styles.box}>
-        {/* Dòng 1: Mã BN, ngày, mã đơn */}
+        {/* Dòng : Mã BN, ngày, mã đơn */}
         <View style={styles.row}>
           <Text style={{ width: "50%" }}>
             <Text style={styles.bold}>Mã đơn:</Text> {prescriptionDetails?.code}
@@ -152,45 +153,48 @@ export const MyDocument = ({
               dayjs(prescriptionDetails.createdAt).format("DD/MM/YYYY HH:mm")}
           </Text>
         </View>
-        {/* Dòng 2: Họ tên, SN/tuổi/GT */}
+        {/* Dòng : Họ tên, SN/tuổi/GT */}
         <View style={styles.row}>
           <Text style={{ width: "50%" }}>
             <Text style={styles.bold}>Họ tên:</Text>{" "}
             <Text>{prescriptionDetails?.patient?.name}</Text>
           </Text>
-          <Text style={{ width: "25%" }}>
-            <Text style={styles.bold}>Năm sinh:</Text>{" "}
-            <Text>
-              {prescriptionDetails?.patient?.dateOfBirth &&
-                dayjs(prescriptionDetails?.patient?.dateOfBirth).format("YYYY")}
-            </Text>
-          </Text>
-          <Text style={{ width: "25%" }}>
+          <Text style={{ width: "50%" }}>
             <Text style={styles.bold}> Giới tính:</Text>{" "}
             {prescriptionDetails?.patient?.gender === "male"
               ? "Nam"
               : prescriptionDetails?.patient?.gender === "female"
-              ? "Nữ"
-              : "Khác"}
+                ? "Nữ"
+                : "Khác"}
           </Text>
         </View>
-        {/* Dòng 3: Địa chỉ, ĐT */}
+        {/* Dòng : Năm sinh, ĐT */}
         <View style={styles.row}>
           <Text style={{ width: "50%" }}>
-            <Text style={styles.bold}>Địa chỉ:</Text>{" "}
-            {prescriptionDetails?.patient?.address}
+            <Text style={styles.bold}>Năm sinh:</Text>{" "}
+            <Text>
+              {prescriptionDetails?.patient?.dateOfBirth &&
+                dayjs(prescriptionDetails?.patient?.dateOfBirth).format("DD/MM/YYYY")}
+            </Text>
           </Text>
           <Text style={{ width: "50%" }}>
             <Text style={styles.bold}>ĐT:</Text>{" "}
             {prescriptionDetails?.patient?.phone}
           </Text>
         </View>
-        {/* Dòng 4: Chẩn đoán */}
+        {/* Dòng : Địa chỉ */}
+        <View style={styles.row}>
+          <Text style={{ width: "100%" }}>
+            <Text style={styles.bold}>Địa chỉ:</Text>{" "}
+            {prescriptionDetails?.patient?.address}
+          </Text>
+        </View>
+        {/* Dòng : Chẩn đoán */}
         <View style={styles.row}>
           <Text style={{ width: "100%" }}>
             <Text style={styles.bold}>Chẩn đoán:</Text>{" "}
             {prescriptionDetails?.diagnoses
-              ?.map((d) => d.diagnosis.name)
+              ?.map((d) => d.diagnosis.code + " - " + d.diagnosis.name)
               .join("\n")}
           </Text>
         </View>
@@ -203,7 +207,7 @@ export const MyDocument = ({
           <Text style={styles.thStt}>STT</Text>
           <Text style={styles.thName}>Mặt hàng thuốc, vật tư</Text>
           <Text style={styles.thQty}>SL</Text>
-          <Text style={styles.thUnit}>ĐV</Text>
+          <Text style={styles.thUnit}>ĐVT</Text>
           <Text style={styles.thNote}>Cách dùng</Text>
         </View>
         {/* Table Rows */}
@@ -211,7 +215,7 @@ export const MyDocument = ({
           <View key={item.id || idx} style={styles.tableRow}>
             <Text style={styles.thStt}>{idx + 1}</Text>
             <Text style={styles.thName}>{item?.medicine?.name}</Text>
-            <Text style={styles.thQty}>{item?.quantity}</Text>
+            <Text style={styles.thQty}>{item?.quantity >= 10 ? item?.quantity : "0" + item?.quantity}</Text>
             <Text style={styles.thUnit}>{item?.medicine?.unit}</Text>
             <Text style={styles.thNote}>
               {item?.instruction || item?.instruction}
@@ -250,5 +254,5 @@ export const MyDocument = ({
         Uống thuốc đúng hướng dẫn Bác sỹ và tái khám đúng hẹn!
       </Text>
     </Page>
-  </Document>
+  </Document >
 );

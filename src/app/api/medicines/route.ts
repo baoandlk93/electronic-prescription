@@ -1,22 +1,28 @@
 import { prisma } from '@/lib/prisma';
 
 export async function POST(req: Request) {
-    try {
-      const data = await req.json();
-  
-      if (!data.name || !data.content || !data.unit) {
-        return Response.json(
-          { error: 'Thiếu trường dữ liệu (name, content, unit) là bắt buộc.' },
-          { status: 400 }
-        );
-      }
-  
-      const medicine = await prisma.medicine.create({ data });
-      return Response.json(medicine);
-    } catch (err) {
-      return Response.json({ error: 'Lỗi khi thêm thuốc', details: err }, { status: 500 });
+  try {
+    const data = await req.json();
+
+    if (!data.mã || !data.tên_thuốc || !data.đơn_vị) {
+      return Response.json(
+        { error: 'Thiếu trường dữ liệu (mã, tên thuốc, đơn vị) là bắt buộc.' },
+        { status: 400 }
+      );
     }
+
+    const medicine = await prisma.medicine.create({
+      data: {
+        name: data.tên_thuốc,
+        content: data.hàm_lượng,
+        unit: data.đơn_vị,
+      }
+    });
+    return Response.json(medicine);
+  } catch (err) {
+    return Response.json({ error: 'Lỗi khi thêm thuốc', details: err }, { status: 500 });
   }
+}
 
 export async function GET() {
   try {
