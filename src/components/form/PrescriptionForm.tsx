@@ -62,6 +62,8 @@ export default function PrescriptionForm({
       name: "Đơn thuốc khác"
     },
   ];
+   // Ví dụ sử dụng
+   const baseCode = "PKHMT"; // Thay thế bằng mã cơ sở thực tế
   const [diagnoses, setDiagnoses] = useState<DiagnosisDetail[]>([]);
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [form] = Form.useForm();
@@ -144,8 +146,7 @@ export default function PrescriptionForm({
     return `${baseCode}${dayjs().format("DDMMYY")}${count}-${typeCode}`;
   }
 
-  // Ví dụ sử dụng
-  const baseCode = "56015"; // Thay thế bằng mã cơ sở thực tế
+ 
   // Submit
   const onFinish = async (values: any) => {
     const newMedicines = values.medicines.map((item: any) => {
@@ -206,11 +207,11 @@ export default function PrescriptionForm({
       <Form.Item
         label="Loại đơn thuốc"
         name="typeCode"
-        rules={[{ required: true, message: "Vui lòng chọn bệnh nhân." }]}
+        rules={[{ required: true, message: "Vui lòng chọn Loại đơn thuốc." }]}
       >
         <Select
           showSearch
-          placeholder="Nhập mã, tên bệnh"
+          placeholder="Chọn Loại đơn thuốc"
           filterOption={(input, option) =>
             (option?.label ?? "").toLowerCase().includes(input.toLowerCase())
           }

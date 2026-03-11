@@ -1,13 +1,22 @@
 import { Form, Input, Button, Select } from "antd";
 import { useEffect, useState } from "react";
 
-export default function AddressForm({ onSuccess }: { onSuccess?: (data: any) => void }) {
+export default function AddressForm({
+  onSuccess,
+  onClose,
+}: {
+  onSuccess?: (data: any) => void;
+  onClose: () => void;
+}) {
   const [form] = Form.useForm();
   const [provinces, setProvinces] = useState<any[]>([]);
   const [wards, setWards] = useState<any[]>([]);
 
   useEffect(() => {
     fetchProvinces();
+    form.resetFields();
+  }, []);
+  useEffect(() => {
     form.resetFields();
   }, []);
 
@@ -18,7 +27,9 @@ export default function AddressForm({ onSuccess }: { onSuccess?: (data: any) => 
   };
 
   const fetchWards = async (provinceId: string) => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_PROVINCE_URL}w`);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_PROVINCE_URL}w`,
+    );
     const data = await response.json();
     const wards = data.filter((w: any) => w.province_code === provinceId);
     setWards(wards);
@@ -29,14 +40,19 @@ export default function AddressForm({ onSuccess }: { onSuccess?: (data: any) => 
       ...values,
       province: provinces.find((p: any) => p.code === values.province).name,
       ward: wards.find((w: any) => w.code === values.ward).name,
-    }
+    };
     if (onSuccess) {
       onSuccess(address);
     }
   };
+
   return (
     <Form form={form} layout="vertical" onFinish={handleSubmit}>
-      <Form.Item label="Tỉnh/Thành phố" name="province" rules={[{ required: true, message: "Vui lòng chọn Tỉnh/Thành phố" }]}>
+      <Form.Item
+        label="Tỉnh/Thành phố"
+        name="province"
+        rules={[{ required: true, message: "Vui lòng chọn Tỉnh/Thành phố" }]}
+      >
         <Select
           showSearch
           filterOption={(input, option) =>
@@ -45,7 +61,6 @@ export default function AddressForm({ onSuccess }: { onSuccess?: (data: any) => 
           options={provinces.map((p) => ({ label: p.name, value: p.code }))}
           onChange={(value: string) => {
             fetchWards(value);
-            console.log(value, "value");
             form.setFieldsValue({
               province: value,
               ward: undefined,
@@ -53,7 +68,11 @@ export default function AddressForm({ onSuccess }: { onSuccess?: (data: any) => 
           }}
         />
       </Form.Item>
-      <Form.Item label="Xã/Phường" name="ward" rules={[{ required: true, message: "Vui lòng chọn Xã/Phường." }]}>
+      <Form.Item
+        label="Xã/Phường"
+        name="ward"
+        rules={[{ required: true, message: "Vui lòng chọn Xã/Phường." }]}
+      >
         <Select
           showSearch
           filterOption={(input, option) =>
@@ -67,10 +86,19 @@ export default function AddressForm({ onSuccess }: { onSuccess?: (data: any) => 
           }}
         />
       </Form.Item>
-      <Form.Item label="Địa chỉ chi tiết" name="address" rules={[{ required: true, message: "Vui lòng nhập Địa chỉ chi tiết" }]}>
+      <Form.Item
+        label="Địa chỉ chi tiết"
+        name="address"
+        rules={[{ required: true, message: "Vui lòng nhập Địa chỉ chi tiết" }]}
+      >
         <Input />
       </Form.Item>
-      <Form.Item> <Button type="primary" htmlType="submit">Lưu</Button></Form.Item>
+      <Form.Item>
+        {" "}
+        <Button type="primary" htmlType="submit">
+          Lưu
+        </Button>
+      </Form.Item>
     </Form>
   );
 }

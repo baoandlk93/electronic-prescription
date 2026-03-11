@@ -5,6 +5,7 @@ import AddPatientForm from "@/components/form/AddPatientForm";
 import { Patient } from "@/types/Patient";
 import Modal from "antd/es/modal/Modal";
 import { FaUser } from "react-icons/fa";
+import { FaFileExcel } from "react-icons/fa";
 import DataTable from "@/components/ultility/DataTable";
 import DeleteModal from "@/components/ultility/DeleteModal";
 import dayjs from "dayjs";
@@ -44,10 +45,22 @@ export default function PatientPage() {
         toast.error("Xóa bệnh nhân thất bại!");
       });
   };
+  const handleExport = async () => {
+    const response = await fetch("/api/export");
+    if (response.ok) {
+      const blob = await response.blob();
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = "patients.xlsx";
+      link.click();
+    } else {
+      console.error("Error exporting data");
+    }
+  };
   return (
-    <div className="flex flex-col w-[calc(100vw-200px)] max-h-screen overflow-hidden bg-gray-50 text-gray-900 p-16">
+    <div className="flex flex-col  max-h-screen overflow-hidden bg-gray-50 text-gray-900 p-16">
       <h1 className="text-2xl font-bold mb-4 text-center">Quản lý bệnh nhân</h1>
-      <div className="flex justify-start mb-4">
+      <div className="flex justify-start mb-4 gap-4">
         <Button
           type="primary"
           onClick={() => {
@@ -56,6 +69,14 @@ export default function PatientPage() {
           }}
         >
           <FaUser /> Thêm bệnh nhân
+        </Button>
+        <Button
+          type="primary"
+          variant="outlined"
+          color="green"
+          onClick={handleExport}
+        >
+          <FaFileExcel /> Xuất file Excel
         </Button>
       </div>
       <DataTable

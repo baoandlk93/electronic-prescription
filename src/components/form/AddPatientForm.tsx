@@ -14,10 +14,14 @@ export default function AddPatientForm({
 }) {
   const [form] = Form.useForm();
   const [showAddressForm, setShowAddressForm] = useState(false);
-  const [address, setAddress] = useState("")
+  const [address, setAddress] = useState("");
+  const handleClose = () => {
+    setAddress("");
+    setShowAddressForm(false);
+  };
   useEffect(() => {
     if (editingPatient) {
-      setAddress(editingPatient.address)
+      setAddress(editingPatient.address);
       form.setFieldsValue({
         id: editingPatient.id,
         fullName: editingPatient.name, // mapping từ name sang fullName
@@ -26,7 +30,7 @@ export default function AddPatientForm({
           : null, // mapping date
         gender: editingPatient.gender,
         phone: editingPatient.phone,
-        address: address,
+        address: editingPatient.address,
       });
     } else {
       form.resetFields();
@@ -40,7 +44,7 @@ export default function AddPatientForm({
     const data = {
       ...(editingPatient?.id ? { id: editingPatient.id } : {}),
       name: values.fullName,
-      dateOfBirth: values.dob ? values.dob.format("DD/MM/YYYY") : undefined,
+      dateOfBirth: values.dob,
       gender: values.gender,
       address: address,
       phone: values.phone,
@@ -56,8 +60,9 @@ export default function AddPatientForm({
     if (onSuccess) onSuccess();
   };
   const handleSuccess = (data: any) => {
-    const newData = data.address + ", " + data.ward + ", " + data.province
+    const newData = data.address + ", " + data.ward + ", " + data.province;
     setAddress(newData);
+    form.setFieldValue("address", newData);
     setShowAddressForm(false);
   };
 
@@ -84,7 +89,7 @@ export default function AddPatientForm({
           name="dob"
           rules={[{ required: true, message: "Nhập năm sinh!" }]}
         >
-          <DatePicker picker="date" format="DD/MM/YYYY" style={{ width: "100%" }} />
+          <Input />
         </Form.Item>
         <Form.Item
           label="Giới tính"
@@ -99,20 +104,30 @@ export default function AddPatientForm({
             ]}
           />
         </Form.Item>
-        <Form.Item label="Số điện thoại" name="phone" rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}>
+        <Form.Item
+          label="Số điện thoại"
+          name="phone"
+          rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
+        >
           <Input />
         </Form.Item>
-        <Form.Item name="address">
-          <Button type="primary" htmlType="button" onClick={() => {
-            if (showAddressForm) {
-              setShowAddressForm(false);
-            } else {
-              setShowAddressForm(true);
-            }
-          }}>
-            {showAddressForm ? "Đóng địa chỉ" : "Thêm địa chỉ"}
-          </Button>
-
+        <Form.Item
+          label="Địa chỉ"
+          name="address"
+          rules={[{ required: true, message: "Vui lòng Nhập địa chỉ!" }]}
+        >
+          <div className="flex gap-2">
+            <Input
+              value={address}
+              onChange={(e) => {
+                setAddress(e.target.value);
+                form.setFieldValue("address", e.target.value);
+              }}
+            />
+            <Button onClick={() => setShowAddressForm(true)} type="primary">
+              Chọn địa chỉ
+            </Button>
+          </div>
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
@@ -120,8 +135,13 @@ export default function AddPatientForm({
           </Button>
         </Form.Item>
       </Form>
-      <Modal title="Thêm địa chỉ" open={showAddressForm} onCancel={() => setShowAddressForm(false)} footer={null}>
-        <AddressForm onSuccess={handleSuccess} />
+      <Modal
+        title="Thêm địa chỉ"
+        open={showAddressForm}
+        onCancel={() => setShowAddressForm(false)}
+        footer={null}
+      >
+        <AddressForm onSuccess={handleSuccess} onClose={handleClose} />
       </Modal>
     </>
   );
