@@ -29,10 +29,10 @@ function normalizeInitialValues(pres?: PrescriptionDetail | null) {
     symptom: pres.symptom ?? "",
     medicines: pres.items
       ? pres.items.map((item: any) => ({
-        medicineId: item.medicineId || item.id,
-        quantity: item.quantity,
-        instruction: item.instruction,
-      }))
+          medicineId: item.medicineId || item.id,
+          quantity: item.quantity,
+          instruction: item.instruction,
+        }))
       : [],
     advice: pres.advice ?? "",
     followUpDate: pres.followUpDate ? dayjs(pres.followUpDate) : null,
@@ -51,19 +51,19 @@ export default function PrescriptionForm({
   const types = [
     {
       code: "N",
-      name: "Đơn thuốc gây nghiện"
+      name: "Đơn thuốc gây nghiện",
     },
     {
       code: "H",
-      name: "Đơn thuốc hướng thần, thuốc tiền chất"
+      name: "Đơn thuốc hướng thần, thuốc tiền chất",
     },
     {
       code: "C",
-      name: "Đơn thuốc khác"
+      name: "Đơn thuốc khác",
     },
   ];
-   // Ví dụ sử dụng
-   const baseCode = "PKHMT"; // Thay thế bằng mã cơ sở thực tế
+  // Ví dụ sử dụng
+  const baseCode = "PKHMT"; // Thay thế bằng mã cơ sở thực tế
   const [diagnoses, setDiagnoses] = useState<DiagnosisDetail[]>([]);
   const [medicines, setMedicines] = useState<Medicine[]>([]);
   const [form] = Form.useForm();
@@ -146,16 +146,15 @@ export default function PrescriptionForm({
     return `${baseCode}${dayjs().format("DDMMYY")}${count}-${typeCode}`;
   }
 
- 
   // Submit
   const onFinish = async (values: any) => {
     const newMedicines = values.medicines.map((item: any) => {
       return {
         medicineId: item.medicineId,
         quantity: item.quantity,
-        instruction: `Sáng: ${item["instruction.morning"]}, Trưa: ${item["instruction.noon"]}, Tối: ${item["instruction.evening"]}`
+        instruction: `Sáng: ${item["instruction.morning"] || 0}, Trưa: ${item["instruction.noon"] || 0}, Tối: ${item["instruction.evening"] || 0}`,
       };
-    })
+    });
 
     setLoading(true);
     try {
@@ -164,8 +163,8 @@ export default function PrescriptionForm({
         ...(editingPrescription?.code
           ? { code: editingPrescription.code }
           : {
-            code: generatePrescriptionCode(baseCode, values.typeCode),
-          }),
+              code: generatePrescriptionCode(baseCode, values.typeCode),
+            }),
         patientId: values.patientId,
         diagnosisIds: values.diagnosisIds,
         symptom: values.symptom,
@@ -183,7 +182,7 @@ export default function PrescriptionForm({
         toast.success(
           editingPrescription?.id
             ? "Cập nhật đơn thuốc thành công!"
-            : "Tạo mới đơn thuốc thành công!"
+            : "Tạo mới đơn thuốc thành công!",
         );
         form.resetFields();
         handleIncrease();
@@ -298,23 +297,29 @@ export default function PrescriptionForm({
                   <Form.Item
                     {...restField}
                     name={[name, "instruction.morning"]}
-                    rules={[{ required: true, message: "Nhập số lượng buổi sáng" }]}
                   >
-                    <InputNumber placeholder="Sáng" style={{ width: 60 }} />
+                    <InputNumber
+                      placeholder="Sáng"
+                      defaultValue={0}
+                      style={{ width: 60 }}
+                    />
                   </Form.Item>
-                  <Form.Item
-                    {...restField}
-                    name={[name, "instruction.noon"]}
-                    rules={[{ required: true, message: "Nhập số lượng buổi trưa" }]}
-                  >
-                    <InputNumber placeholder="Trưa" style={{ width: 60 }} />
+                  <Form.Item {...restField} name={[name, "instruction.noon"]}>
+                    <InputNumber
+                      placeholder="Trưa"
+                      defaultValue={0}
+                      style={{ width: 60 }}
+                    />
                   </Form.Item>
                   <Form.Item
                     {...restField}
                     name={[name, "instruction.evening"]}
-                    rules={[{ required: true, message: "Nhập số lượng buổi tối" }]}
                   >
-                    <InputNumber placeholder="Tối" style={{ width: 60 }} />
+                    <InputNumber
+                      placeholder="Tối"
+                      defaultValue={0}
+                      style={{ width: 60 }}
+                    />
                   </Form.Item>
                 </div>
                 <Button danger type="link" onClick={() => remove(name)}>

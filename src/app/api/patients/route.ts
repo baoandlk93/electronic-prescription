@@ -12,9 +12,9 @@ export async function POST(req: Request) {
     try {
         const data = await req.json();
     
-        if (!data.name || !data.phone || !data.address) {
+        if (!data.name || !data.address) {
             return Response.json(
-                { error: 'Thiếu trường dữ liệu (name, phone, address) là bắt buộc.' },
+                { error: 'Thiếu trường dữ liệu (name, address) là bắt buộc.' },
                 { status: 400 }
             );
         }

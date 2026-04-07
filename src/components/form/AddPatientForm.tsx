@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { Form, Input, Button, DatePicker, Select, Modal } from "antd";
 import dayjs from "dayjs";
 import AddressForm from "./AddressForm";
+import { toast } from "react-toastify";
 export default function AddPatientForm({
   onSuccess,
   editingPatient,
@@ -55,9 +56,25 @@ export default function AddPatientForm({
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
-    });
-    form.resetFields();
-    if (onSuccess) onSuccess();
+    })
+      .then((res) => {
+        console.log(res, "res");
+        if (!res.ok) {
+          throw new Error(res.statusText);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        toast.success("Thêm bệnh nhân thành công");
+      })
+      .catch((err) => {
+        toast.error(err.message);
+        console.error(err);
+      })
+      .finally(() => {
+        form.resetFields();
+        if (onSuccess) onSuccess();
+      });
   };
   const handleSuccess = (data: any) => {
     const newData = data.address + ", " + data.ward + ", " + data.province;
@@ -104,17 +121,13 @@ export default function AddPatientForm({
             ]}
           />
         </Form.Item>
-        <Form.Item
-          label="Số điện thoại"
-          name="phone"
-          rules={[{ required: true, message: "Vui lòng nhập số điện thoại!" }]}
-        >
+        <Form.Item label="Số điện thoại" name="phone">
           <Input />
         </Form.Item>
         <Form.Item
           label="Địa chỉ"
           name="address"
-          rules={[{ required: true, message: "Vui lòng Nhập địa chỉ!" }]}
+          rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
         >
           <div className="flex gap-2">
             <Input
