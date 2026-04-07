@@ -3,13 +3,14 @@ import { prisma } from '@/lib/prisma';
 export async function POST(req: Request) {
   try {
     const data = await req.json();
+    console.log(data);
 
-    if (!data.mã || !data.tên_thuốc || !data.đơn_vị) {
-      return Response.json(
-        { error: 'Thiếu trường dữ liệu (mã, tên thuốc, đơn vị) là bắt buộc.' },
-        { status: 400 }
-      );
-    }
+    // if (!data.mã || !data.tên_thuốc || !data.đơn_vị) {
+    //   return Response.json(
+    //     { error: 'Thiếu trường dữ liệu (mã, tên thuốc, đơn vị) là bắt buộc.' },
+    //     { status: 400 }
+    //   );
+    // }
 
     const medicine = await prisma.medicine.create({
       data: {

@@ -42,7 +42,7 @@ export default function AddMedicineForm({
       toast.success(
         editingMedicine
           ? "Cập nhật thuốc thành công!"
-          : "Thêm thuốc mới thành công!"
+          : "Thêm thuốc mới thành công!",
       );
       form.resetFields();
       if (onSuccess) onSuccess();
@@ -64,21 +64,21 @@ export default function AddMedicineForm({
       </Form.Item>
       <Form.Item
         label="Tên thuốc"
-        name="name"
+        name="tên_thuốc"
         rules={[{ required: true, message: "Vui lòng nhập tên thuốc!" }]}
       >
         <Input />
       </Form.Item>
       <Form.Item
         label="Hoạt chất/Hàm lượng"
-        name="content"
+        name="hàm_lượng"
         rules={[{ required: true, message: "Nhập thành phần, hàm lượng" }]}
       >
         <Input placeholder="Ví dụ: Paracetamol 500mg" />
       </Form.Item>
       <Form.Item
         label="Đơn vị"
-        name="unit"
+        name="đơn_vị"
         rules={[{ required: true, message: "Nhập đơn vị" }]}
       >
         <Input placeholder="viên, ống, gói..." />
