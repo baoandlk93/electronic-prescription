@@ -23,7 +23,6 @@ const MedicineImport = ({
         | undefined
       )[][];
 
-
       const headers = data[0] as string[];
       const rows = data.slice(1);
 
@@ -33,14 +32,19 @@ const MedicineImport = ({
       }
 
       // Xác định vị trí các cột cần lấy (B, C, L)
-      const col_Ma = headers.findIndex((h) => h === "MA_THUOC_BV");
-      const col_TenThuoc = headers.findIndex((h) => h === "TEN_THUOC");
-      const col_HamLuong = headers.findIndex((h) => h === "HAM_LUONG");
-      const col_DonVi = headers.findIndex((h) => h === "DON_VI_TINH");
+      const col_Ma = headers.findIndex((h) => h === "MA");
+      const col_TenThuoc = headers.findIndex((h) => h === "TEN");
+      const col_HamLuong = headers.findIndex((h) => h === "HAMLUONG");
+      const col_DonVi = headers.findIndex((h) => h === "DONVITINH");
 
-      if (col_Ma === -1 || col_TenThuoc === -1 || col_HamLuong === -1 || col_DonVi === -1) {
+      if (
+        col_Ma === -1 ||
+        col_TenThuoc === -1 ||
+        col_HamLuong === -1 ||
+        col_DonVi === -1
+      ) {
         toast.error(
-            "Một trong các cột 'MA_THUOC_BV', 'TEN_THUOC', 'HAM_LUONG', 'DON_VI_TINH' không tồn tại!"
+          "Một trong các cột 'MA', 'TEN', 'HAMLUONG', 'DONVITINH' không tồn tại!",
         );
         return;
       }
@@ -48,7 +52,12 @@ const MedicineImport = ({
       // Duyệt từng dòng, chỉ lấy 3 cột cần thiết
       const medicines = rows
         .filter(
-          (row) => row && (row[col_Ma] || row[col_TenThuoc] || row[col_HamLuong] || row[col_DonVi])
+          (row) =>
+            row &&
+            (row[col_Ma] ||
+              row[col_TenThuoc] ||
+              row[col_HamLuong] ||
+              row[col_DonVi]),
         )
         .map((row) => ({
           mã: row[col_Ma] ?? "",
