@@ -30,7 +30,7 @@ export default function PatientSelector({
       }
       options={patients.map((p) => ({
         value: p.id,
-        label: `${p.name} - ${p.id} - ${dayjs(p.dateOfBirth).format("YYYY")}`,
+        label: `${p.name} - ${dayjs(p.dateOfBirth).format("YYYY")}${p.lastVisitDate ? ` - Đơn gần nhất: ${dayjs(p.lastVisitDate).format("DD/MM/YYYY")}` : " - Chưa có đơn"}`,
       }))}
       style={{ width: "100%" }}
       value={value}

@@ -17,7 +17,7 @@ export default function DiagnosisPage() {
     useState<DiagnosisDetail | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [diagnosisIdToDelete, setDiagnosisIdToDelete] = useState<string | "">(
-    ""
+    "",
   );
 
   function openDeleteModal(id: string) {
@@ -52,7 +52,10 @@ export default function DiagnosisPage() {
   };
   const handleImportDiseases = (diseases: any[]) => {
     const filtered = diseases.filter((disease) =>
-      (disease["tên_bệnh"] || "").toString().toLowerCase().includes("phổi")
+      (disease["tên_bệnh"] || "")
+        .toString()
+        .toLowerCase()
+        .includes("phổi", "lao"),
     );
     filtered.forEach((disease) => {
       fetch("/api/diagnoses", {

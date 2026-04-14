@@ -122,15 +122,9 @@ export const MyDocument = ({
       {/* Header phòng khám */}
       <View style={styles.headerClinic}>
         <View style={{ flex: 1 }}>
-          <Text style={styles.clinicName}>
-            PHÒNG KHÁM CK NỘI BS TÂM
-          </Text>
-          <Text style={styles.clinicName}>
-            CHUYÊN NGÀNH : PHỔI VÀ LAO
-          </Text>
-          <Text>
-            Địa chỉ: 207A Hoàng Văn Thụ,Tây Nha Trang, Khánh Hòa
-          </Text>
+          <Text style={styles.clinicName}>PHÒNG KHÁM CK NỘI BS TÂM</Text>
+          <Text style={styles.clinicName}>CHUYÊN NGÀNH : PHỔI VÀ LAO</Text>
+          <Text>Địa chỉ: 207A Hoàng Văn Thụ,Tây Nha Trang, Khánh Hòa</Text>
           <Text>ĐT: 0983314039</Text>
         </View>
       </View>
@@ -172,10 +166,11 @@ export const MyDocument = ({
         <View style={styles.row}>
           <Text style={{ width: "50%" }}>
             <Text style={styles.bold}>Năm sinh:</Text>{" "}
-            <Text>
+            {/* <Text>
               {prescriptionDetails?.patient?.dateOfBirth &&
                 dayjs(prescriptionDetails?.patient?.dateOfBirth).format("DD/MM/YYYY")}
-            </Text>
+            </Text> */}
+            <Text>{prescriptionDetails?.patient?.dateOfBirth}</Text>
           </Text>
           <Text style={{ width: "50%" }}>
             <Text style={styles.bold}>ĐT:</Text>{" "}
@@ -215,7 +210,9 @@ export const MyDocument = ({
           <View key={item.id || idx} style={styles.tableRow}>
             <Text style={styles.thStt}>{idx + 1}</Text>
             <Text style={styles.thName}>{item?.medicine?.name}</Text>
-            <Text style={styles.thQty}>{item?.quantity >= 10 ? item?.quantity : "0" + item?.quantity}</Text>
+            <Text style={styles.thQty}>
+              {item?.quantity >= 10 ? item?.quantity : "0" + item?.quantity}
+            </Text>
             <Text style={styles.thUnit}>{item?.medicine?.unit}</Text>
             <Text style={styles.thNote}>
               {item?.instruction || item?.instruction}
@@ -254,5 +251,5 @@ export const MyDocument = ({
         Uống thuốc đúng hướng dẫn Bác sỹ và tái khám đúng hẹn!
       </Text>
     </Page>
-  </Document >
+  </Document>
 );

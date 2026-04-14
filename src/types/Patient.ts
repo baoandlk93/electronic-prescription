@@ -7,4 +7,5 @@ export interface Patient {
     address: string;
     phone: string;
     createdAt: string;
+    lastVisitDate?: string | null;
 }

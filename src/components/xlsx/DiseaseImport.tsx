@@ -23,8 +23,6 @@ const DiseaseImport = ({
         | undefined
       )[][];
 
-      console.log(data, "data");
-
       const headers = data[4] as string[];
       const rows = data.slice(5);
 
@@ -37,11 +35,10 @@ const DiseaseImport = ({
       const col_Ma = headers.findIndex((h) => h === "Mã");
       const col_TenBenh = headers.findIndex((h) => h === "Tên bệnh ");
       const col_MoTa = headers.findIndex((h) => h === "Mô tả");
-      console.log(col_Ma, col_TenBenh, col_MoTa, "col");
 
       if (col_Ma === -1 || col_TenBenh === -1 || col_MoTa === -1) {
         toast.error(
-          "Một trong các cột 'Mã', 'Tên bệnh', 'Mô tả' không tồn tại!"
+          "Một trong các cột 'Mã', 'Tên bệnh', 'Mô tả' không tồn tại!",
         );
         return;
       }
@@ -49,7 +46,7 @@ const DiseaseImport = ({
       // Duyệt từng dòng, chỉ lấy 3 cột cần thiết
       const diseases = rows
         .filter(
-          (row) => row && (row[col_Ma] || row[col_TenBenh] || row[col_MoTa])
+          (row) => row && (row[col_Ma] || row[col_TenBenh] || row[col_MoTa]),
         )
         .map((row) => ({
           mã: row[col_Ma] ?? "",
