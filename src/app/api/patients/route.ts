@@ -11,11 +11,19 @@ export async function GET() {
             }
         });
 
-        const result = patients
-            .map((patient) => {
-                const { prescriptions, ...p } = patient;
-                return { ...p, lastVisitDate: prescriptions[0]?.createdAt ?? null };
-            })
+        type PatientWithVisit = Omit<(typeof patients)[number], 'prescriptions'> & { lastVisitDate: Date | null };
+
+        const result: PatientWithVisit[] = patients
+            .map((patient) => ({
+                id: patient.id,
+                name: patient.name,
+                dateOfBirth: patient.dateOfBirth,
+                gender: patient.gender,
+                address: patient.address,
+                phone: patient.phone,
+                createdAt: patient.createdAt,
+                lastVisitDate: patient.prescriptions[0]?.createdAt ?? null,
+            }))
             .sort((a, b) => {
                 if (!a.lastVisitDate) return 1;
                 if (!b.lastVisitDate) return -1;
