@@ -12,10 +12,10 @@ export async function GET() {
         });
 
         const result = patients
-            .map(({ prescriptions, ...p }) => ({
-                ...p,
-                lastVisitDate: prescriptions[0]?.createdAt ?? null
-            }))
+            .map((patient) => {
+                const { prescriptions, ...p } = patient;
+                return { ...p, lastVisitDate: prescriptions[0]?.createdAt ?? null };
+            })
             .sort((a, b) => {
                 if (!a.lastVisitDate) return 1;
                 if (!b.lastVisitDate) return -1;
