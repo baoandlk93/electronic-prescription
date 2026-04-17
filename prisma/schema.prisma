@@ -44,7 +44,7 @@ model Prescription {
 model Diagnosis {
   id                      Int                      @id @default(autoincrement())
   name                    String
-  code                    String
+  code                    String                   @unique
   description             String
   prescriptions           PrescriptionDiagnosis[]
 }

@@ -15,6 +15,7 @@ export default function MedicinePage() {
   const [editingMedicine, setEditingMedicine] = useState<Medicine | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [medicineIdToDelete, setMedicineIdToDelete] = useState<string | "">("");
+  const [importing, setImporting] = useState(false);
 
   function openDeleteModal(id: string) {
     setMedicineIdToDelete(id);
@@ -45,14 +46,31 @@ export default function MedicinePage() {
       });
   };
 
-  const handleImportMedicines = (medicines: any[]) => {
-    medicines.forEach((medicine) => {
-      fetch("/api/medicines", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(medicine),
-      });
-    });
+  const BATCH_SIZE = 500;
+
+  const handleImportMedicines = async (items: any[]) => {
+    if (items.length === 0) return;
+    setImporting(true);
+    let totalImported = 0;
+    try {
+      for (let i = 0; i < items.length; i += BATCH_SIZE) {
+        const batch = items.slice(i, i + BATCH_SIZE);
+        const res = await fetch("/api/medicines/bulk", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(batch),
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const { count } = await res.json();
+        totalImported += count;
+      }
+      toast.success(`Import thành công ${totalImported} thuốc!`);
+      fetchMedicines();
+    } catch {
+      toast.error("Import thất bại!");
+    } finally {
+      setImporting(false);
+    }
   };
   useEffect(() => {
     fetchMedicines();
@@ -71,7 +89,7 @@ export default function MedicinePage() {
         >
           <GiMedicines /> Thêm thuốc
         </Button>
-        <MedicineImport onImport={handleImportMedicines} />
+        <MedicineImport onImport={handleImportMedicines} loading={importing} />
       </div>
       <DataTable
         columns={[

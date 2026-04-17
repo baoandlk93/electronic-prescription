@@ -6,8 +6,10 @@ import { toast } from "react-toastify";
 
 const MedicineImport = ({
   onImport,
+  loading,
 }: {
   onImport: (medicines: any[]) => void;
+  loading?: boolean;
 }) => {
   const handleFile = (file: File) => {
     const reader = new FileReader();
@@ -31,7 +33,6 @@ const MedicineImport = ({
         return;
       }
 
-      // Xác định vị trí các cột cần lấy (B, C, L)
       const col_Ma = headers.findIndex((h) => h === "MA");
       const col_TenThuoc = headers.findIndex((h) => h === "TEN");
       const col_HamLuong = headers.findIndex((h) => h === "HAMLUONG");
@@ -49,24 +50,14 @@ const MedicineImport = ({
         return;
       }
 
-      // Duyệt từng dòng, chỉ lấy 3 cột cần thiết
       const medicines = rows
-        .filter(
-          (row) =>
-            row &&
-            (row[col_Ma] ||
-              row[col_TenThuoc] ||
-              row[col_HamLuong] ||
-              row[col_DonVi]),
-        )
+        .filter((row) => row && (row[col_Ma] || row[col_TenThuoc]))
         .map((row) => ({
-          mã: row[col_Ma] ?? "",
-          tên_thuốc: row[col_TenThuoc] ?? "",
-          đơn_vị: row[col_DonVi] ?? "",
-          hàm_lượng: row[col_HamLuong] ?? "",
+          name: String(row[col_TenThuoc] ?? ""),
+          content: String(row[col_HamLuong] ?? ""),
+          unit: String(row[col_DonVi] ?? ""),
         }));
 
-      toast.success("Import file Excel thành công");
       onImport(medicines);
     };
     reader.readAsArrayBuffer(file);
@@ -78,8 +69,11 @@ const MedicineImport = ({
       beforeUpload={handleFile}
       showUploadList={false}
       accept=".xlsx,.xls"
+      disabled={loading}
     >
-      <Button icon={<UploadOutlined />}>Import danh mục Thuốc (Excel)</Button>
+      <Button icon={<UploadOutlined />} loading={loading}>
+        Import danh mục Thuốc (Excel)
+      </Button>
     </Upload>
   );
 };

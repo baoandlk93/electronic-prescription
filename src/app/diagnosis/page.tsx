@@ -19,6 +19,7 @@ export default function DiagnosisPage() {
   const [diagnosisIdToDelete, setDiagnosisIdToDelete] = useState<string | "">(
     "",
   );
+  const [importing, setImporting] = useState(false);
 
   function openDeleteModal(id: string) {
     setDiagnosisIdToDelete(id);
@@ -50,24 +51,31 @@ export default function DiagnosisPage() {
         toast.error("Xóa bệnh thất bại!");
       });
   };
-  const handleImportDiseases = (diseases: any[]) => {
-    const filtered = diseases.filter((disease) =>
-      (disease["tên_bệnh"] || "")
-        .toString()
-        .toLowerCase()
-        .includes("phổi", "lao"),
-    );
-    filtered.forEach((disease) => {
-      fetch("/api/diagnoses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: disease.tên_bệnh,
-          code: disease.mã,
-          description: disease.mô_tả,
-        }),
-      }).catch((err) => {});
-    });
+  const BATCH_SIZE = 500;
+
+  const handleImportDiseases = async (diseases: any[]) => {
+    if (diseases.length === 0) return;
+    setImporting(true);
+    let totalImported = 0;
+    try {
+      for (let i = 0; i < diseases.length; i += BATCH_SIZE) {
+        const batch = diseases.slice(i, i + BATCH_SIZE);
+        const res = await fetch("/api/diagnoses/bulk", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(batch),
+        });
+        if (!res.ok) throw new Error(await res.text());
+        const { count } = await res.json();
+        totalImported += count;
+      }
+      toast.success(`Import thành công ${totalImported} bệnh!`);
+      fetchDiagnoses();
+    } catch {
+      toast.error("Import thất bại!");
+    } finally {
+      setImporting(false);
+    }
   };
   return (
     <div className="flex flex-col w-full max-h-screen overflow-hidden bg-gray-50 text-gray-900 p-16">
@@ -82,7 +90,7 @@ export default function DiagnosisPage() {
         >
           <GiMedicines /> Thêm bệnh
         </Button>
-        <DiseaseImport onImport={handleImportDiseases} />
+        <DiseaseImport onImport={handleImportDiseases} loading={importing} />
       </div>
       <DataTable
         columns={[
