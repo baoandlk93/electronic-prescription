@@ -1,5 +1,5 @@
 import { Upload, Button } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { UploadOutlined, DownloadOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 import React from "react";
 import { toast } from "react-toastify";
@@ -64,17 +64,37 @@ const MedicineImport = ({
     return false;
   };
 
+  const handleDownloadTemplate = () => {
+    const sampleData = [
+      { MA: "PARA", TEN: "Paracetamol", HAMLUONG: "500mg", DONVITINH: "Viên" },
+      { MA: "AMOX", TEN: "Amoxicillin", HAMLUONG: "250mg", DONVITINH: "Viên" },
+      { MA: "VITC", TEN: "Vitamin C", HAMLUONG: "1000mg", DONVITINH: "Viên" },
+    ];
+    const ws = XLSX.utils.json_to_sheet(sampleData, {
+      header: ["MA", "TEN", "HAMLUONG", "DONVITINH"],
+    });
+    ws["!cols"] = [{ wch: 12 }, { wch: 30 }, { wch: 15 }, { wch: 12 }];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Danh mục thuốc");
+    XLSX.writeFile(wb, "mau_danh_muc_thuoc.xlsx");
+  };
+
   return (
-    <Upload
-      beforeUpload={handleFile}
-      showUploadList={false}
-      accept=".xlsx,.xls"
-      disabled={loading}
-    >
-      <Button icon={<UploadOutlined />} loading={loading}>
-        Import danh mục Thuốc (Excel)
+    <div style={{ display: "flex", gap: 8 }}>
+      <Upload
+        beforeUpload={handleFile}
+        showUploadList={false}
+        accept=".xlsx,.xls"
+        disabled={loading}
+      >
+        <Button icon={<UploadOutlined />} loading={loading}>
+          Import danh mục Thuốc (Excel)
+        </Button>
+      </Upload>
+      <Button icon={<DownloadOutlined />} onClick={handleDownloadTemplate}>
+        Tải file mẫu
       </Button>
-    </Upload>
+    </div>
   );
 };
 
