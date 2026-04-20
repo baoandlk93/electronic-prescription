@@ -28,11 +28,22 @@ function normalizeInitialValues(pres?: PrescriptionDetail | null) {
       : [],
     symptom: pres.symptom ?? "",
     medicines: pres.items
-      ? pres.items.map((item: any) => ({
-          medicineId: item.medicineId || item.id,
-          quantity: item.quantity,
-          instruction: item.instruction,
-        }))
+      ? pres.items.map((item: any) => {
+          const instr: string = item.instruction ?? "";
+          const mealMatch = instr.match(/- (.+)$/);
+          const dosePart = instr.split(" - ")[0] ?? "";
+          const morning = dosePart.match(/Sáng:\s*(\d+)/)?.[1] ?? "0";
+          const noon = dosePart.match(/Trưa:\s*(\d+)/)?.[1] ?? "0";
+          const evening = dosePart.match(/Tối:\s*(\d+)/)?.[1] ?? "0";
+          return {
+            medicineId: item.medicineId || item.id,
+            quantity: item.quantity,
+            "instruction.morning": Number(morning),
+            "instruction.noon": Number(noon),
+            "instruction.evening": Number(evening),
+            "instruction.mealTime": mealMatch?.[1] ?? "Sau ăn",
+          };
+        })
       : [],
     advice: pres.advice ?? "",
     followUpDate: pres.followUpDate ? dayjs(pres.followUpDate) : null,
@@ -149,10 +160,11 @@ export default function PrescriptionForm({
   // Submit
   const onFinish = async (values: any) => {
     const newMedicines = values.medicines.map((item: any) => {
+      const mealTime = item["instruction.mealTime"] ?? "Sau ăn";
       return {
         medicineId: item.medicineId,
         quantity: item.quantity,
-        instruction: `Sáng: ${item["instruction.morning"] || 0}, Trưa: ${item["instruction.noon"] || 0}, Tối: ${item["instruction.evening"] || 0}`,
+        instruction: `Sáng: ${item["instruction.morning"] || 0}, Trưa: ${item["instruction.noon"] || 0}, Tối: ${item["instruction.evening"] || 0} - ${mealTime}`,
       };
     });
 
@@ -322,6 +334,20 @@ export default function PrescriptionForm({
                     />
                   </Form.Item>
                 </div>
+                <Form.Item
+                  {...restField}
+                  name={[name, "instruction.mealTime"]}
+                  initialValue="Sau ăn"
+                >
+                  <Select
+                    style={{ width: 110 }}
+                    options={[
+                      { value: "Trước ăn", label: "Trước ăn" },
+                      { value: "Sau ăn", label: "Sau ăn" },
+                      { value: "Trong bữa ăn", label: "Trong bữa ăn" },
+                    ]}
+                  />
+                </Form.Item>
                 <Button danger type="link" onClick={() => remove(name)}>
                   Xoá
                 </Button>
