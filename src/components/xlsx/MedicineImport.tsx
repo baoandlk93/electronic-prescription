@@ -66,9 +66,24 @@ const MedicineImport = ({
 
   const handleDownloadTemplate = () => {
     const sampleData = [
-      { MA: "PARA", TEN: "Paracetamol", HAMLUONG: "500mg", DONVITINH: "Viên" },
-      { MA: "AMOX", TEN: "Amoxicillin", HAMLUONG: "250mg", DONVITINH: "Viên" },
-      { MA: "VITC", TEN: "Vitamin C", HAMLUONG: "1000mg", DONVITINH: "Viên" },
+      {
+        MA: "ACI500 25-27",
+        TEN: "Acid tranexamic 500mg",
+        HAMLUONG: "500mg",
+        DONVITINH: "Viên",
+      },
+      {
+        MA: "AGI300 25-27",
+        TEN: "Agifamcin 300",
+        HAMLUONG: "300mg",
+        DONVITINH: "Viên",
+      },
+      {
+        MA: "AST10 23-25",
+        TEN: "Astmodil",
+        HAMLUONG: "10mg",
+        DONVITINH: "Viên",
+      },
     ];
     const ws = XLSX.utils.json_to_sheet(sampleData, {
       header: ["MA", "TEN", "HAMLUONG", "DONVITINH"],
